@@ -1116,6 +1116,11 @@ function MobileActiveCard({
 }
 
 /* ─── Main component ──────────────────────────────────────── */
+const ORBIT_PAD = 96;
+const ACTIVE_PANEL_W = 460;
+const HUD_V = 90;
+const SAFE_MARGIN = 20;
+
 export default function PortfolioDial() {
   const [activeIdx, setActiveIdx] = useState(0);
   const [open, setOpen] = useState<string | null>(null);
@@ -1132,11 +1137,17 @@ export default function PortfolioDial() {
   }, [activeIdx]);
 
   // Viewport state — SSR-safe (starts at 0/0, populates on mount).
+  // The `mounted` flag gates the dial geometry: SSR renders an empty
+  // .dial-stage and the client populates it post-hydration. This sidesteps
+  // hydration mismatches from sub-ULP differences in Math.cos / Math.sin
+  // between Node (server) and the browser engine.
   const [vp, setVp] = useState({ w: 0, h: 0 });
+  const [mounted, setMounted] = useState(false);
   useEffect(() => {
     const onResize = () =>
       setVp({ w: window.innerWidth, h: window.innerHeight });
     onResize();
+    setMounted(true);
     window.addEventListener("resize", onResize);
     return () => window.removeEventListener("resize", onResize);
   }, []);
@@ -1186,12 +1197,6 @@ export default function PortfolioDial() {
   }, [inView, activeIdx, n, open]);
 
   const isMobile = vp.w > 0 && vp.w <= 720;
-
-  // Layout / sizing
-  const ORBIT_PAD = 96;
-  const ACTIVE_PANEL_W = 460;
-  const HUD_V = 90;
-  const SAFE_MARGIN = 20;
   const dialShift = isMobile ? 0 : ACTIVE_PANEL_W * 0.6;
 
   let dialSize: number;
@@ -1251,107 +1256,115 @@ export default function PortfolioDial() {
         fontFamily: "var(--font-sans)",
       }}
     >
-      <div
-        aria-hidden
-        style={{
-          position: "absolute",
-          inset: 0,
-          pointerEvents: "none",
-          opacity: 0.35,
-          background:
-            "radial-gradient(120% 120% at 50% 50%, transparent 55%, rgba(26, 24, 21, 0.06))",
-        }}
-      />
-
-      {isMobile ? (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            paddingTop: 28,
-            paddingBottom: 90,
-            gap: 32,
-            width: "100%",
-            minHeight: "100%",
-          }}
-        >
+      {mounted && (
+        <>
           <div
+            aria-hidden
             style={{
-              position: "relative",
-              width: dialSize,
-              height: dialSize,
-              flexShrink: 0,
+              position: "absolute",
+              inset: 0,
+              pointerEvents: "none",
+              opacity: 0.35,
+              background:
+                "radial-gradient(120% 120% at 50% 50%, transparent 55%, rgba(26, 24, 21, 0.06))",
             }}
-          >
-            <DotField size={dialSize} angle={visualAngle} />
-            <TickRing size={dialSize} accent={accent} hudOn={CONFIG.hudOn} />
-            <CenterImage size={Math.round(dialSize * 0.76)} />
-          </div>
-
-          <MobileNavArrows
-            activeIdx={activeIdx}
-            n={n}
-            onPrev={() => setActiveIdx((i) => Math.max(0, i - 1))}
-            onNext={() => setActiveIdx((i) => Math.min(n - 1, i + 1))}
           />
 
-          <div style={{ width: "100%" }}>
-            <MobileActiveCard
-              project={active}
-              idx={activeIdx}
+          {isMobile ? (
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                paddingTop: 28,
+                paddingBottom: 90,
+                gap: 32,
+                width: "100%",
+                minHeight: "100%",
+              }}
+            >
+              <div
+                style={{
+                  position: "relative",
+                  width: dialSize,
+                  height: dialSize,
+                  flexShrink: 0,
+                }}
+              >
+                <DotField size={dialSize} angle={visualAngle} />
+                <TickRing
+                  size={dialSize}
+                  accent={accent}
+                  hudOn={CONFIG.hudOn}
+                />
+                <CenterImage size={Math.round(dialSize * 0.76)} />
+              </div>
+
+              <MobileNavArrows
+                activeIdx={activeIdx}
+                n={n}
+                onPrev={() => setActiveIdx((i) => Math.max(0, i - 1))}
+                onNext={() => setActiveIdx((i) => Math.min(n - 1, i + 1))}
+              />
+
+              <div style={{ width: "100%" }}>
+                <MobileActiveCard
+                  project={active}
+                  idx={activeIdx}
+                  accent={accent}
+                  direction={direction}
+                  onOpen={(id) => setOpen(id)}
+                />
+              </div>
+            </div>
+          ) : (
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: "50%",
+                transform: `translate(calc(-50% - ${dialShift}px), -50%)`,
+                width: dialSize,
+                height: dialSize,
+              }}
+            >
+              <DotField size={dialSize} angle={visualAngle} />
+              <TickRing size={dialSize} accent={accent} hudOn={CONFIG.hudOn} />
+              <CenterImage size={Math.round(dialSize * 0.72)} />
+
+              <OrbitingHeadings
+                projects={PROJECTS}
+                activeIdx={activeIdx}
+                radius={dialSize / 2 + ORBIT_PAD}
+                dialAngle={dialAngle}
+                arcSpread={CONFIG.arcSpread}
+                accent={accent}
+                onSelect={setActiveIdx}
+                onOpen={(id) => setOpen(id)}
+              />
+
+              <NavArrows
+                dialSize={dialSize}
+                canPrev={activeIdx > 0}
+                canNext={activeIdx < n - 1}
+                onPrev={() => setActiveIdx((i) => Math.max(0, i - 1))}
+                onNext={() => setActiveIdx((i) => Math.min(n - 1, i + 1))}
+              />
+            </div>
+          )}
+
+          {CONFIG.hudOn && (
+            <HudFooter
               accent={accent}
-              direction={direction}
-              onOpen={(id) => setOpen(id)}
+              activeIdx={activeIdx}
+              n={n}
+              onAllProjects={() => {
+                // TODO: navigate to all-projects view when /projects route exists
+                console.log("All Projects clicked");
+              }}
             />
-          </div>
-        </div>
-      ) : (
-        <div
-          style={{
-            position: "absolute",
-            left: "50%",
-            top: "50%",
-            transform: `translate(calc(-50% - ${dialShift}px), -50%)`,
-            width: dialSize,
-            height: dialSize,
-          }}
-        >
-          <DotField size={dialSize} angle={visualAngle} />
-          <TickRing size={dialSize} accent={accent} hudOn={CONFIG.hudOn} />
-          <CenterImage size={Math.round(dialSize * 0.72)} />
-
-          <OrbitingHeadings
-            projects={PROJECTS}
-            activeIdx={activeIdx}
-            radius={dialSize / 2 + ORBIT_PAD}
-            dialAngle={dialAngle}
-            arcSpread={CONFIG.arcSpread}
-            accent={accent}
-            onSelect={setActiveIdx}
-            onOpen={(id) => setOpen(id)}
-          />
-
-          <NavArrows
-            dialSize={dialSize}
-            canPrev={activeIdx > 0}
-            canNext={activeIdx < n - 1}
-            onPrev={() => setActiveIdx((i) => Math.max(0, i - 1))}
-            onNext={() => setActiveIdx((i) => Math.min(n - 1, i + 1))}
-          />
-        </div>
-      )}
-
-      {CONFIG.hudOn && (
-        <HudFooter
-          accent={accent}
-          activeIdx={activeIdx}
-          n={n}
-          onAllProjects={() => {
-            // TODO: navigate to all-projects view when /projects route exists
-            console.log("All Projects clicked");
-          }}
-        />
+          )}
+        </>
       )}
 
       {open && (
