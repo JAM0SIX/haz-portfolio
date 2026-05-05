@@ -1,0 +1,81 @@
+.section {
+  position: relative;
+  min-height: 100vh;
+  background: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-9) var(--space-7);
+  overflow: hidden;
+}
+
+.inner {
+  width: 100%;
+  max-width: 880px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+}
+
+.eyebrow {
+  color: var(--ink-62);
+}
+
+.wordmark {
+  margin: 0;
+}
+
+.wordmark em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: var(--weight-medium);
+}
+
+.lede {
+  color: var(--ink-82);
+  max-width: 56ch;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+/* The "Begin" CTA is an <a> styled with the canonical .btn classes so
+   the browser handles native scroll-to-anchor. The .btn rules already
+   apply via class \u2014 nothing else needed here. */
+
+.cornerLabel {
+  position: absolute;
+  top: var(--space-7);
+  left: var(--space-7);
+  color: var(--ink-42);
+}
+
+.cornerLabelRight {
+  position: absolute;
+  top: var(--space-7);
+  right: var(--space-7);
+  color: var(--ink-42);
+}
+
+@media (max-width: 720px) {
+  .section {
+    padding: var(--space-9) var(--space-5);
+  }
+
+  .cornerLabel,
+  .cornerLabelRight {
+    top: var(--space-5);
+  }
+
+  .cornerLabel {
+    left: var(--space-5);
+  }
+
+  .cornerLabelRight {
+    right: var(--space-5);
+  }
+}

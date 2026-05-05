@@ -1,0 +1,82 @@
+/* ─────────────────────────────────────────────────────────────
+   Portfolio Dial — keyframes + stage cursor.
+   Regular CSS (not module) so keyframe names stay literal and
+   are referenceable from inline `animation: ...` strings.
+   ───────────────────────────────────────────────────────────── */
+
+.dial-stage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* Crosshair cursor scoped to the dial only — no site-wide override. */
+.dial-stage,
+.dial-stage * {
+  cursor: crosshair;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ctaIn {
+  0% {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes imgIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes accIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes mobCardSlide {
+  0% {
+    opacity: 0;
+    transform: translateX(var(--card-slide-from, 28px));
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
