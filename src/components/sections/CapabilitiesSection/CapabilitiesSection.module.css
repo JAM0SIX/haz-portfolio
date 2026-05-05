@@ -2,6 +2,10 @@
   position: relative;
   background: var(--paper);
   padding: var(--space-9) var(--space-7);
+  min-height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   overflow: hidden;
 }
 

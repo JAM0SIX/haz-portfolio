@@ -1,70 +1,108 @@
+import type { CSSProperties, ReactNode } from "react";
+import Button from "@/components/ui/Button";
 import styles from "./AboutSection.module.css";
 
-const ASIDE = [
+type Trait = {
+  title: string;
+  body: ReactNode;
+};
+
+const TRAITS: Trait[] = [
   {
-    key: "Skills",
-    value: "Product, identity, motion, design ops, frontend.",
+    title: "AI native",
+    body: (
+      <>
+        Focus on AI digital transformation. In fact, I&rsquo;ve been
+        designing AI products before it was cool. Expert in bringing
+        research and design closer to code with a focus on AI
+        communication&hellip;
+      </>
+    ),
   },
   {
-    key: "Clients",
-    value:
-      "PHILPOT\u2014PEARCE, GWI, LexisNexis, SoundTrends, plus a handful under NDA.",
+    title: "Student of tech",
+    body: (
+      <>
+        This is a turbulent time in tech but I&rsquo;m embracing the ever
+        evolving role of a designer. That is due to my belief to always{" "}
+        <em>learn</em> and <em>live</em>.
+      </>
+    ),
   },
   {
-    key: "Tools",
-    value: "Figma, TypeScript, Next.js, Framer Motion, a stubborn Wacom.",
-  },
-  {
-    key: "Based",
-    value: "London \u2014 working internationally.",
+    title: "Happy",
+    body: <>Thanks for stopping by, I hope you enjoyed viewing my work.</>,
   },
 ];
 
-export default function AboutSection() {
+const FIELDS = [
+  "Finance",
+  "Professional services",
+  "Data",
+  "Med-tech",
+  "Agencies",
+  "and more",
+];
+
+type AboutSectionProps = {
+  /** Optional portrait image URL. When omitted, a tonal gradient placeholder
+      with a hint label is rendered in its place. */
+  portraitSrc?: string;
+  /** Caption shown beside the portrait (top of the right column). */
+  caption?: ReactNode;
+  /** Click handler for the secondary CTA. */
+  onAboutMeClick?: () => void;
+};
+
+export default function AboutSection({
+  portraitSrc = "/projects/Aboutme.png",
+  caption = (
+    <>
+      35mm
+      <br />
+      Manhattan rooftop
+    </>
+  ),
+  onAboutMeClick,
+}: AboutSectionProps = {}) {
+  const portraitStyle: CSSProperties | undefined = portraitSrc
+    ? { backgroundImage: `url(${portraitSrc})` }
+    : undefined;
+
   return (
-    <section
-      id="about"
-      className={styles.section}
-      aria-labelledby="about-title"
-    >
-      <div className={styles.inner}>
-        <div className={styles.header}>
-          <h2 id="about-title" className={`type-display ${styles.heading}`}>
-            About.
-          </h2>
+    <section id="about" className={styles.section} aria-label="About">
+      <div className={styles.shell}>
+        <div className={styles.heroImage} style={portraitStyle}>
+          {!portraitSrc && (
+            <span className={styles.imagePlaceholderNote}>
+              Replace with portrait.jpg
+            </span>
+          )}
         </div>
 
-        <div className={styles.grid}>
-          <div className={`type-editorial ${styles.bio}`}>
-            <p>
-              I&rsquo;m a designer who works at the seam between product,
-              identity, and engineering. Most of what I make is dense, quiet,
-              and built to last&mdash;instrument-like, if I had to pick a
-              word. I care about defaults, type rhythm, and the precise
-              moment a hover state earns its keep.
-            </p>
-            <p>
-              Lately I&rsquo;ve been writing as much code as I draw rectangles.
-              Frontend systems, build tooling, the kind of internal interfaces
-              that don&rsquo;t get a launch. A few public things along the
-              way; mostly the work I&rsquo;m proudest of is invisible.
-            </p>
-            <p>
-              If you&rsquo;re building something where the small parts have to
-              be exactly right, we should talk.
-            </p>
-          </div>
+        <div className={styles.heroSide}>
+          <p className={styles.filemeta}>{caption}</p>
+          <Button variant="secondary" arrow="→" onClick={onAboutMeClick}>
+            ABOUT ME
+          </Button>
+        </div>
 
-          <aside className={styles.aside}>
-            {ASIDE.map((row) => (
-              <div key={row.key} className={styles.asideGroup}>
-                <span className={`type-label ${styles.asideKey}`}>
-                  {row.key}
-                </span>
-                <p className={`type-body ${styles.asideValue}`}>{row.value}</p>
-              </div>
+        {TRAITS.map((t) => (
+          <div key={t.title} className={styles.trait}>
+            <h3 className={styles.traitHeading}>{t.title}</h3>
+            <hr className={styles.rule} />
+            <p className={styles.traitBody}>{t.body}</p>
+          </div>
+        ))}
+
+        <div className={styles.fields}>
+          <h3 className={styles.fieldsHeading}>Fields of work</h3>
+          <hr className={styles.rule} />
+          <ul className={styles.fieldsList}>
+            {FIELDS.map((f) => (
+              <li key={f}>{f}</li>
             ))}
-          </aside>
+          </ul>
         </div>
       </div>
     </section>

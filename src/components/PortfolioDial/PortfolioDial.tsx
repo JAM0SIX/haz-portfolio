@@ -476,13 +476,56 @@ function HeadingItem({
         >
           <div
             style={{
-              display: "flex",
-              gap: 22,
               borderTop: "1px dashed var(--ink-22)",
               paddingTop: 12,
               marginBottom: 14,
+              display: "flex",
+              flexDirection: "column",
+              gap: 12,
             }}
           >
+            <div
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                gap: 6,
+              }}
+            >
+              {project.tags.map((t) => (
+                <span
+                  key={t}
+                  style={{
+                    position: "relative",
+                    display: "inline-flex",
+                    alignItems: "center",
+                    background: "var(--ink-22)",
+                    clipPath:
+                      "polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)",
+                    padding: "3px 9px",
+                    font: '500 10px/1 var(--font-sans)',
+                    letterSpacing: ".18em",
+                    color: "var(--ink-62)",
+                    textTransform: "uppercase",
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  <span
+                    aria-hidden
+                    style={{
+                      position: "absolute",
+                      inset: 1,
+                      background: "var(--paper)",
+                      clipPath:
+                        "polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px)",
+                      zIndex: 0,
+                    }}
+                  />
+                  <span style={{ position: "relative", zIndex: 1 }}>{t}</span>
+                </span>
+              ))}
+            </div>
+
+            <div style={{ display: "flex", gap: 22 }}>
             {project.metrics.map(([k, v, u]) => (
               <div
                 key={k}
@@ -517,26 +560,19 @@ function HeadingItem({
                 </span>
               </div>
             ))}
+            </div>
           </div>
           <div
             style={{
               display: "flex",
-              alignItems: "center",
+              flexDirection: "column",
+              justifyContent: "flex-start",
+              alignItems: "flex-start",
               gap: 14,
-              flexWrap: "wrap",
+              flexWrap: "nowrap",
             }}
           >
             <ActiveCTA onOpen={onOpen} />
-            <div
-              style={{
-                font: '500 10px/1.3 var(--font-sans)',
-                letterSpacing: ".18em",
-                color: "var(--ink-62)",
-                textTransform: "uppercase",
-              }}
-            >
-              {project.tags.join(" · ")}
-            </div>
           </div>
         </div>
       </div>
@@ -1029,7 +1065,7 @@ function MobileActiveCard({
     margin: "0 16px",
     padding: "20px 22px",
     background: "rgba(245, 243, 238, 0.6)",
-    border: "1px solid var(--ink-12)",
+    border: "none",
     "--card-slide-from": `${slideFrom}px`,
     animation: "mobCardSlide .45s cubic-bezier(.32,.72,.32,1) both",
   } as CSSProperties;
@@ -1077,60 +1113,111 @@ function MobileActiveCard({
           marginTop: 14,
           borderTop: "1px dashed var(--ink-22)",
           paddingTop: 12,
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: 14,
+          display: "flex",
+          flexDirection: "column",
+          gap: 12,
         }}
       >
-        {project.metrics.map(([k, v, u]) => (
-          <div
-            key={k}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: 4,
-              minWidth: 0,
-            }}
-          >
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 6,
+          }}
+        >
+          {project.tags.map((t) => (
             <span
+              key={t}
               style={{
+                position: "relative",
+                display: "inline-flex",
+                alignItems: "center",
+                background: "var(--ink-22)",
+                clipPath:
+                  "polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px)",
+                padding: "3px 9px",
                 font: '500 10px/1 var(--font-sans)',
                 letterSpacing: ".18em",
                 color: "var(--ink-62)",
                 textTransform: "uppercase",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
               }}
             >
-              {k}
+              <span
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  inset: 1,
+                  background: "var(--paper)",
+                  clipPath:
+                    "polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px)",
+                  zIndex: 0,
+                }}
+              />
+              <span style={{ position: "relative", zIndex: 1 }}>{t}</span>
             </span>
-            <span
+          ))}
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(3, 1fr)",
+            gap: 14,
+          }}
+        >
+          {project.metrics.map(([k, v, u]) => (
+            <div
+              key={k}
               style={{
-                font: '600 16px/1 var(--font-sans)',
-                letterSpacing: ".02em",
-                color: "var(--ink)",
-                fontVariantNumeric: "tabular-nums",
+                display: "flex",
+                flexDirection: "column",
+                gap: 4,
+                minWidth: 0,
               }}
             >
-              {v}
-              {u && (
-                <span style={{ fontSize: 10, opacity: 0.55, marginLeft: 3 }}>
-                  {u}
-                </span>
-              )}
-            </span>
-          </div>
-        ))}
+              <span
+                style={{
+                  font: '500 10px/1 var(--font-sans)',
+                  letterSpacing: ".18em",
+                  color: "var(--ink-62)",
+                  textTransform: "uppercase",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                  whiteSpace: "nowrap",
+                }}
+              >
+                {k}
+              </span>
+              <span
+                style={{
+                  font: '600 16px/1 var(--font-sans)',
+                  letterSpacing: ".02em",
+                  color: "var(--ink)",
+                  fontVariantNumeric: "tabular-nums",
+                }}
+              >
+                {v}
+                {u && (
+                  <span style={{ fontSize: 10, opacity: 0.55, marginLeft: 3 }}>
+                    {u}
+                  </span>
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
       </div>
 
       <div
         style={{
           marginTop: 16,
           display: "flex",
-          alignItems: "center",
+          flexDirection: "column",
+          justifyContent: "flex-start",
+          alignItems: "flex-start",
           gap: 12,
-          flexWrap: "wrap",
+          flexWrap: "nowrap",
         }}
       >
         <Button
@@ -1140,16 +1227,6 @@ function MobileActiveCard({
         >
           View Project
         </Button>
-        <div
-          style={{
-            font: '500 10px/1.3 var(--font-sans)',
-            letterSpacing: ".18em",
-            color: "var(--ink-62)",
-            textTransform: "uppercase",
-          }}
-        >
-          {project.tags.join(" · ")}
-        </div>
       </div>
     </div>
   );

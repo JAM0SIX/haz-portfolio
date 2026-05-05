@@ -508,10 +508,11 @@
 }
 
 .previewRow {
-  display: grid;
-  grid-template-columns: 1fr auto;
+  display: flex;
+  flex-direction: column;
   gap: var(--space-7);
-  align-items: center;
+  justify-content: center;
+  align-items: flex-start;
 }
 
 .rowExcerpt {
@@ -524,19 +525,16 @@
 }
 
 .rowCta {
-  align-self: center;
-  justify-self: end;
   margin-top: 0;
+}
+
+.rowCta .btn {
+  display: flex;
 }
 
 @media (max-width: 900px) {
   .previewRow {
-    grid-template-columns: 1fr;
     gap: var(--space-4);
-  }
-
-  .rowCta {
-    justify-self: start;
   }
 }
 
