@@ -1,0 +1,52 @@
+.page {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-9) var(--space-7);
+}
+
+.main {
+  width: 100%;
+  max-width: 720px;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+}
+
+.eyebrow {
+  color: var(--ink-62);
+}
+
+.wordmark {
+  /* Spectral hero size with a subtle italic period — the only flourish. */
+  margin: 0;
+}
+
+.wordmark em {
+  font-style: italic;
+  color: var(--accent);
+  font-weight: var(--weight-medium);
+}
+
+.lede {
+  color: var(--ink-82);
+  max-width: 52ch;
+  margin: 0;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.foot {
+  margin-top: var(--space-8);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--ink-22);
+  display: flex;
+  justify-content: space-between;
+  color: var(--ink-62);
+}

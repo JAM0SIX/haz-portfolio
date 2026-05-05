@@ -1,0 +1,259 @@
+/* ─────────────────────────────────────────────────────────────
+   Haz. — Button system
+   Source of truth: DESIGN-SYSTEM.md §2.1
+   ─────────────────────────────────────────────────────────────
+
+   The chamfered-outline technique:
+   - The outer .btn carries the border color and the clip-path.
+   - .btn::before is inset 1px and carries the actual fill, also
+     clipped. The 1px gap between the two layers reads as the
+     border, and follows the chamfer cleanly because both layers
+     share the same shape.
+
+   The 6-point polygon trick:
+   - CSS only animates clip-path between polygons of identical
+     vertex count. Both rest and hover states use 6 points.
+   - At rest, the two "cut" vertices sit on top of the corner
+     positions (visually no cut). On hover, they slide inward by
+     --chamfer-size. The cut animates smoothly.
+   ───────────────────────────────────────────────────────────── */
+
+/* ─── Shared base ─── */
+.btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: 10px var(--space-4);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--track-caps);
+  line-height: var(--leading-tight);
+  text-transform: uppercase;
+  cursor: pointer;
+  border: none;
+  background: transparent; /* set per tier */
+  color: inherit;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 100% 100%, 0 100%, 0 0);
+  transition:
+    clip-path var(--dur-base) var(--ease-default),
+    background-color var(--dur-base) var(--ease-default),
+    color var(--dur-base) var(--ease-default),
+    font-weight var(--dur-base) var(--ease-default);
+}
+
+.btn:hover:not(:disabled) {
+  font-weight: var(--weight-semibold);
+  clip-path: polygon(
+    var(--chamfer-size) 0,
+    100% 0,
+    100% calc(100% - var(--chamfer-size)),
+    calc(100% - var(--chamfer-size)) 100%,
+    0 100%,
+    0 var(--chamfer-size)
+  );
+}
+
+/* ─── Inner fill layer ─── */
+.btn::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  z-index: 0;
+  background: inherit; /* overridden per tier */
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 100% 100%, 0 100%, 0 0);
+  transition:
+    clip-path var(--dur-base) var(--ease-default),
+    background-color var(--dur-base) var(--ease-default);
+}
+
+.btn:hover:not(:disabled)::before {
+  clip-path: polygon(
+    var(--chamfer-inner) 0,
+    100% 0,
+    100% calc(100% - var(--chamfer-inner)),
+    calc(100% - var(--chamfer-inner)) 100%,
+    0 100%,
+    0 var(--chamfer-inner)
+  );
+}
+
+/* Content sits above the fill layer */
+.btn > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* ─── Ghost-width reservation ───
+   Stops the button resizing when text shifts from weight 500 → 600
+   on hover. Each text-bearing span renders an invisible bold
+   duplicate via a ::before pseudo, locking the width to the bold
+   measurement. Markup must include data-text="..." matching the
+   visible label. */
+.btn > span:not(.btn-arrow) {
+  position: relative;
+  display: inline-block;
+}
+
+.btn > span:not(.btn-arrow)::before {
+  content: attr(data-text);
+  display: block;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  font-weight: var(--weight-semibold);
+}
+
+/* ─── Trailing arrow ─── */
+.btn-arrow {
+  display: inline-block;
+  transition: transform var(--dur-base) var(--ease-default);
+}
+
+.btn:hover:not(:disabled) .btn-arrow {
+  transform: translateX(3px);
+}
+
+/* ─── Tier: Primary (accent fill) ─── */
+.btn-primary {
+  background: var(--accent);
+  color: var(--paper);
+}
+.btn-primary::before {
+  background: var(--accent);
+}
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+.btn-primary:hover:not(:disabled)::before {
+  background: var(--accent-hover);
+}
+
+/* ─── Tier: Secondary (ink fill) ─── */
+.btn-secondary {
+  background: var(--ink);
+  color: var(--paper);
+}
+.btn-secondary::before {
+  background: var(--ink);
+}
+.btn-secondary:hover:not(:disabled) {
+  background: var(--ink-hover);
+}
+.btn-secondary:hover:not(:disabled)::before {
+  background: var(--ink-hover);
+}
+
+/* ─── Tier: Tertiary (accent border, paper inside) ─── */
+.btn-tertiary {
+  background: var(--accent); /* outer = visible border */
+  color: var(--accent);
+}
+.btn-tertiary::before {
+  background: var(--paper); /* inner = transparent against page */
+}
+.btn-tertiary:hover:not(:disabled) {
+  background: var(--accent-hover);
+  color: var(--accent-hover);
+}
+/* Tertiary inner stays paper on hover — only outline shifts */
+
+/* On dark surfaces, override the inner fill on the call-site:
+   .on-ink-panel .btn-tertiary::before { background: var(--ink-panel); } */
+
+/* ─── Disabled state (any tier) ─── */
+.btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+.btn:disabled:hover {
+  font-weight: var(--weight-medium);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 100% 100%, 0 100%, 0 0);
+}
+.btn:disabled:hover::before {
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 100% 100%, 0 100%, 0 0);
+}
+.btn:disabled:hover .btn-arrow {
+  transform: translateX(0);
+}
+
+/* ─────────────────────────────────────────────────────────────
+   Icon-only button — accent border, accent icon, paper interior.
+   No text. No data-text reservation. No arrow.
+   ───────────────────────────────────────────────────────────── */
+
+.btn-icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent); /* outer = border color */
+  color: var(--accent);
+  cursor: pointer;
+  border: none;
+  padding: 0;
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 100% 100%, 0 100%, 0 0);
+  transition:
+    background-color var(--dur-base) var(--ease-default),
+    color var(--dur-base) var(--ease-default),
+    clip-path var(--dur-base) var(--ease-default);
+}
+
+.btn-icon::before {
+  content: "";
+  position: absolute;
+  inset: 1px;
+  background: var(--paper);
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 100% 100%, 0 100%, 0 0);
+  transition: clip-path var(--dur-base) var(--ease-default);
+}
+
+.btn-icon > svg {
+  position: relative;
+  z-index: 1;
+}
+
+.btn-icon:hover:not(:disabled) {
+  background: var(--accent-hover);
+  color: var(--accent-hover);
+  clip-path: polygon(
+    var(--chamfer-size) 0,
+    100% 0,
+    100% calc(100% - var(--chamfer-size)),
+    calc(100% - var(--chamfer-size)) 100%,
+    0 100%,
+    0 var(--chamfer-size)
+  );
+}
+
+.btn-icon:hover:not(:disabled)::before {
+  clip-path: polygon(
+    var(--chamfer-inner) 0,
+    100% 0,
+    100% calc(100% - var(--chamfer-inner)),
+    calc(100% - var(--chamfer-inner)) 100%,
+    0 100%,
+    0 var(--chamfer-inner)
+  );
+}
+
+.btn-icon:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+/* Size modifiers */
+.btn-icon-sm {
+  width: 28px;
+  height: 28px;
+}
+.btn-icon-md {
+  width: 40px;
+  height: 40px;
+}
+.btn-icon-lg {
+  width: 48px;
+  height: 48px;
+}

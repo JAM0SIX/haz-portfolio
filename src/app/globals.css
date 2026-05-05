@@ -1,0 +1,12 @@
+/* ─────────────────────────────────────────────────────────────
+   Haz. — Global stylesheet
+   Loads the design system in cascade order:
+     1. tokens      — :root variables, base reset
+     2. typography  — .type-* role recipes
+     3. buttons     — .btn / .btn-icon system
+   Component-scoped styles live in CSS Modules alongside their .tsx.
+   ───────────────────────────────────────────────────────────── */
+
+@import "../styles/tokens.css";
+@import "../styles/typography.css";
+@import "../styles/buttons.css";
