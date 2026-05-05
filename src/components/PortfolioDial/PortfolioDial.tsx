@@ -22,9 +22,13 @@ import {
   type CSSProperties,
   type ReactNode,
 } from "react";
+import Image from "next/image";
+import { AnimatePresence, motion } from "motion/react";
 import Button from "@/components/ui/Button";
 import { PROJECTS, type Project } from "./projects";
 import "./PortfolioDial.css";
+
+const DISC_EASE = [0.22, 1, 0.36, 1] as const;
 
 const ACCENT = "#C2410C";
 
@@ -218,10 +222,22 @@ function DotField({ size, angle }: { size: number; angle: number }) {
   );
 }
 
-/* ─── Center disc (no image — solid paper-deep) ──────────── */
-function CenterImage({ size }: { size: number }) {
+/* ─── Center disc ───────────────────────────────────────────
+   Shows the active project's image (cross-fading on change) and
+   falls back to the solid paper-deep surface when no image is set
+   on the project. The decorative 1-6-1 halo is preserved. */
+function CenterImage({
+  size,
+  image,
+  alt,
+}: {
+  size: number;
+  image?: string;
+  alt: string;
+}) {
   return (
     <div
+      aria-hidden={!image}
       style={{
         position: "absolute",
         left: "50%",
@@ -236,7 +252,31 @@ function CenterImage({ size }: { size: number }) {
         background: "var(--paper-deep)",
         pointerEvents: "none",
       }}
-    />
+    >
+      <AnimatePresence mode="sync">
+        {image && (
+          <motion.div
+            key={image}
+            initial={{ opacity: 0, scale: 1.04 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 1 }}
+            transition={{ duration: 0.55, ease: DISC_EASE }}
+            style={{ position: "absolute", inset: 0 }}
+          >
+            <Image
+              src={image}
+              alt={alt}
+              fill
+              // The disc renders up to ~864px on a 1200px dial. Hint a
+              // generous size so Next picks the right variant on retina.
+              sizes={`${Math.min(1200, Math.round(size * 1.5))}px`}
+              priority={false}
+              style={{ objectFit: "cover" }}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
 
@@ -1297,7 +1337,11 @@ export default function PortfolioDial() {
                   accent={accent}
                   hudOn={CONFIG.hudOn}
                 />
-                <CenterImage size={Math.round(dialSize * 0.76)} />
+                <CenterImage
+                  size={Math.round(dialSize * 0.76)}
+                  image={active.image}
+                  alt={active.title}
+                />
               </div>
 
               <MobileNavArrows
@@ -1330,7 +1374,11 @@ export default function PortfolioDial() {
             >
               <DotField size={dialSize} angle={visualAngle} />
               <TickRing size={dialSize} accent={accent} hudOn={CONFIG.hudOn} />
-              <CenterImage size={Math.round(dialSize * 0.72)} />
+              <CenterImage
+                size={Math.round(dialSize * 0.72)}
+                image={active.image}
+                alt={active.title}
+              />
 
               <OrbitingHeadings
                 projects={PROJECTS}

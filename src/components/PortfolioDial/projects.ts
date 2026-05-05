@@ -19,6 +19,7 @@ export const PROJECTS: readonly Project[] = [
     role: "Lead Designer & Consultant",
     year: "2026",
     tags: ["Identity", "Product", "Web"],
+    image: "/projects/Philpotpearceshot.png",
     summary:
       "End-to-end product and identity for a London-based studio. Type system, motion language, component library, and a static site that scores 100 on every Lighthouse axis.",
     metrics: [
@@ -33,6 +34,7 @@ export const PROJECTS: readonly Project[] = [
     role: "Senior Product Designer, Data",
     year: "2025 - Current",
     tags: ["Dataviz", "Dashboard", "B2B"],
+    image: "/projects/GWIshot.png",
     summary:
       "Reworked the audience-insights dashboard for the world's largest consumer-research platform. Reduced query-to-insight time by half through progressive disclosure and a unified chart grammar.",
     metrics: [
@@ -47,6 +49,7 @@ export const PROJECTS: readonly Project[] = [
     role: "Senior Product Designer",
     year: "2023 - 2025",
     tags: ["Enterprise", "Search", "AI"],
+    image: "/projects/Lexisnexisshot.png",
     summary:
       "Designed the legal-search experience for an AI-augmented research tool used by 60,000 lawyers. Citation-first results, source-grounded summaries, and a deterministic disclosure pattern.",
     metrics: [
@@ -61,6 +64,7 @@ export const PROJECTS: readonly Project[] = [
     role: "Personal project",
     year: "2026",
     tags: ["Audio", "Discovery", "Mobile"],
+    image: "/projects/Soundtrendshot.png",
     summary:
       "Reimagined music discovery for a long-running app with a loyal but ageing user base. Native iOS, audio-first navigation, daily mixtape rituals, and a typography pass that doubled DAU retention.",
     metrics: [
