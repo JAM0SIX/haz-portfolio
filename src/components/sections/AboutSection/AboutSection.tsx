@@ -81,10 +81,10 @@ export default function AboutSection({
         </div>
 
         <div className={styles.heroSide}>
-          <p className={styles.filemeta}>{caption}</p>
           <Button variant="secondary" arrow="→" onClick={onAboutMeClick}>
             ABOUT ME
           </Button>
+          <p className={styles.filemeta}>{caption}</p>
         </div>
 
         {TRAITS.map((t) => (

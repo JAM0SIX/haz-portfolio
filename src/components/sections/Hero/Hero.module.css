@@ -2,10 +2,10 @@
   position: relative;
   min-height: 100vh;
   /* Matches the BookLogSection's surface (--paper-deep, #eceae3)
-     so the hero shares its darker paper tone. The HeroBackdrop
-     dot field clears with `clearRect` and HeroCopy's .hc-root is
-     transparent, so this is the actual visible surface behind
-     everything in the section. */
+     so the hero shares its darker paper tone. The CursorDotField
+     clears with `clearRect` and HeroCopy's .hc-root is transparent,
+     so this is the actual visible surface behind everything in
+     the section. */
   background: var(--paper-deep);
   display: flex;
   align-items: center;
@@ -14,7 +14,7 @@
   overflow: hidden;
 }
 
-/* Lift HeroCopy above the absolutely-positioned HeroBackdrop.
+/* Lift HeroCopy above the absolutely-positioned CursorDotField.
    `position: relative` participates in the stacking context
    that `position: absolute` on the backdrop creates against
    the section. z-index: 1 puts the copy in front of the

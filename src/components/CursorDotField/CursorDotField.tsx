@@ -1,12 +1,12 @@
 "use client";
 
 /* ─────────────────────────────────────────────────────────────
-   HeroBackdrop — Haz.
+   CursorDotField — Haz.
    Cursor-tracked proximity-reveal dot field, scoped to its
-   parent section.
+   parent box.
 
    Behaviour:
-     · A grid of small dots (default 36px spacing) is drawn on a
+     · A grid of small dots (default 32px spacing) is drawn on a
        <canvas>. Each dot's brightness and radius scale with its
        proximity to the cursor — within ~410px the dot pulls up
        toward a stronger value, with a power-curve falloff so
@@ -22,24 +22,34 @@
        leaving the section snaps the focus back to "far away"
        so dots return to their baseline state.
 
+   Variants:
+     · `paper` — tuned for light surfaces (e.g. --paper, --paper-deep).
+       Far-from-cursor dots sit near paper white at 5% alpha
+       (subtle ambient texture); under-cursor dots resolve to a
+       mid grey at 75% alpha for a soft ink reveal.
+     · `ink` — tuned for dark surfaces (e.g. --ink-panel). The
+       palette is inverted: far dots sit at a dim warm grey that
+       barely separates from the bg, and under-cursor dots brighten
+       toward paper-tone for a luminous reveal.
+
    Performance:
      · Canvas is sized to the backdrop's box via ResizeObserver,
        not window dimensions, so re-layouts (viewport changes,
        responsive 100vh adjustments) are tracked cleanly.
      · An IntersectionObserver short-circuits the RAF loop while
-       the hero is scrolled out of view — no work runs while you
-       browse the rest of the page.
+       the host section is scrolled out of view — no work runs
+       while you browse the rest of the page.
      · The canvas itself is `pointer-events: none`, so it never
-       intercepts clicks/taps meant for HeroCopy's interactive
-       words. Pointer tracking lives on `window`.
+       intercepts clicks/taps meant for content layered above.
+       Pointer tracking lives on `window`.
 
    This component is purposefully self-contained — it owns the
-   single OKLCH→sRGB lookup table for the "mono" palette and
-   draws every frame imperatively, no Motion / GSAP / etc.
+   single OKLCH→sRGB lookup table for both palettes and draws
+   every frame imperatively, no Motion / GSAP / etc.
    ───────────────────────────────────────────────────────────── */
 
 import { useEffect, useRef } from "react";
-import styles from "./HeroBackdrop.module.css";
+import styles from "./CursorDotField.module.css";
 
 /* ─── Renderer config ────────────────────────────────────────
    Values reflect the settings the prototype was tuned to. */
@@ -53,8 +63,8 @@ const CFG = {
   /* Peak alpha for a dot directly under the cursor. The frame
      loop caps `baseline + strength` at this value, so a value
      of 0.75 keeps even the brightest dot at 75% of full ink —
-     subtler reveal, less risk of competing with the copy
-     above. Bump back toward 1 for a punchier focal point. */
+     subtler reveal, less risk of competing with surrounding
+     content. Bump back toward 1 for a punchier focal point. */
   hoverOpacity: 0.75,
   /* Whether to draw a soft radial halo behind the dot cluster.
      Disabled in the prototype's tuned config; left here so it's
@@ -63,19 +73,33 @@ const CFG = {
   haloRadius: 440,
 } as const;
 
-/* ─── Mono OKLCH ramp ─────────────────────────────────────────
+/* ─── Mono OKLCH ramps ────────────────────────────────────────
    The renderer reads `(1 - strength) * 255` as the LUT index, so
-   strength = 0 (far from cursor) → light end (≈ paper), and
-   strength = 1 (under the cursor) → dark end (a soft grey).
-   The dark stop intentionally sits at L=0.45 — a clear grey
-   rather than full --ink — so the focal point reads as a quiet
-   reveal instead of an inky hot-spot. The mid stop is lifted to
-   match, keeping the ramp smoothly graded. */
-const MONO_PALETTE: ReadonlyArray<readonly [number, readonly [number, number, number]]> = [
-  [0.0, [0.45, 0.005, 240]],
-  [0.5, [0.7, 0.005, 240]],
-  [1.0, [0.92, 0.005, 240]],
-];
+   strength = 0 (far from cursor) → STOP 1.0 (last entry), and
+   strength = 1 (under the cursor) → STOP 0.0 (first entry).
+
+   `paper` is tuned for light surfaces: cursor-adjacent dots land
+   on a quiet mid grey, far dots sit on near-paper.
+
+   `ink` flips the direction for dark surfaces: cursor-adjacent
+   dots land near paper-tone for a bright reveal, far dots sit on
+   a dim warm grey just bright enough to read as field texture
+   above the ink-panel surface.
+   ───────────────────────────────────────────────────────────── */
+type PaletteStop = readonly [number, readonly [number, number, number]];
+
+const PALETTES: Record<"paper" | "ink", ReadonlyArray<PaletteStop>> = {
+  paper: [
+    [0.0, [0.45, 0.005, 240]],
+    [0.5, [0.7, 0.005, 240]],
+    [1.0, [0.92, 0.005, 240]],
+  ],
+  ink: [
+    [0.0, [0.92, 0.005, 60]],
+    [0.5, [0.7, 0.005, 60]],
+    [1.0, [0.42, 0.005, 60]],
+  ],
+};
 
 type RGB = readonly [number, number, number];
 
@@ -151,7 +175,17 @@ function mulberry32(seed: number): () => number {
 
 type Dot = { x: number; y: number; jx: number; jy: number; phase: number };
 
-export default function HeroBackdrop() {
+export type CursorDotFieldVariant = "paper" | "ink";
+
+interface CursorDotFieldProps {
+  /* Which palette to use. `paper` (default) is tuned for light
+     surfaces; `ink` is tuned for dark surfaces. */
+  variant?: CursorDotFieldVariant;
+}
+
+export default function CursorDotField({
+  variant = "paper",
+}: CursorDotFieldProps = {}) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
@@ -162,9 +196,10 @@ export default function HeroBackdrop() {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    /* Pre-build the palette LUT once. The renderer never asks for
-       it by name, so this can stay scoped to the effect. */
-    const LUT = buildLUT(MONO_PALETTE);
+    /* Pre-build the palette LUT once per variant. The renderer
+       never asks for it by name, so this can stay scoped to the
+       effect. */
+    const LUT = buildLUT(PALETTES[variant]);
 
     /* Honour the user's reduced-motion setting at mount. We don't
        react to subsequent changes — typical for this kind of
@@ -301,9 +336,9 @@ export default function HeroBackdrop() {
       mx += (useX - mx) * 0.18;
       my += (useY - my) * 0.18;
 
-      /* Transparent clear so the section's --paper bg shows
+      /* Transparent clear so the host section's bg colour shows
          through. The prototype filled with #ffffff each frame;
-         our hero already owns its surface color. */
+         every host of this component already owns its surface. */
       ctx.clearRect(0, 0, W, H);
 
       const R = CFG.radius;
@@ -381,7 +416,7 @@ export default function HeroBackdrop() {
       ro.disconnect();
       io.disconnect();
     };
-  }, []);
+  }, [variant]);
 
   return (
     <div ref={containerRef} className={styles.backdrop} aria-hidden="true">

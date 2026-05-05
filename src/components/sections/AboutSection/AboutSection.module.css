@@ -1,7 +1,7 @@
 .section {
   position: relative;
   background: var(--paper);
-  padding: var(--space-9) var(--space-7);
+  padding: var(--space-9) var(--space-7) 120px;
   overflow: hidden;
 }
 
@@ -56,6 +56,7 @@
    CTA pinned to the bottom edge. */
 .heroSide {
   grid-column: 3 / 4;
+  width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -95,7 +96,7 @@
   font-size: var(--text-md);
   line-height: var(--leading-relaxed);
   color: var(--ink);
-  max-width: 32ch;
+  width: 100%;
 }
 
 .traitBody em {

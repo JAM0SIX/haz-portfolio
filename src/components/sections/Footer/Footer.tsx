@@ -1,92 +1,62 @@
+import CursorDotField from "@/components/CursorDotField/CursorDotField";
 import styles from "./Footer.module.css";
 
 const NAV_LINKS = [
-  { label: "Work", href: "#dial" },
-  { label: "Reading", href: "#reading" },
-  { label: "Capabilities", href: "#capabilities" },
+  { label: "Work", href: "#work" },
   { label: "About", href: "#about" },
-];
-
-const CONTACT_LINKS = [
-  { label: "hello@haz.studio", href: "mailto:hello@haz.studio" },
-  { label: "Are.na", href: "https://www.are.na", external: true },
-  { label: "Read.cv", href: "https://read.cv", external: true },
-  { label: "GitHub", href: "https://github.com", external: true },
+  { label: "Read.cv", href: "https://read.cv/", external: true },
+  { label: "LinkedIn", href: "https://www.linkedin.com/", external: true },
+  { label: "Get in touch", href: "mailto:harryspawforth@gmail.com" },
 ];
 
 export default function Footer() {
   return (
-    <footer
-      id="contact"
-      className={styles.footer}
-      aria-labelledby="footer-title"
-    >
-      <div className={styles.inner}>
-        <div className={styles.grid}>
-          <div className={styles.brand}>
-            <h2
-              id="footer-title"
-              className={`type-display ${styles.wordmark}`}
-            >
-              Haz<em>.</em>
+    <>
+      <footer
+        id="contact"
+        className={styles.footer}
+        aria-labelledby="footer-title"
+      >
+        {/* Cursor-tracked dot field, ink variant — same proximity
+            reveal as the hero, retuned for the dark --ink-panel
+            surface. Sits absolutely behind .inner via z-index;
+            pointer-events pass through. */}
+        <CursorDotField variant="ink" />
+
+        <div className={styles.inner}>
+          <div className={styles.mark}>
+            <h2 id="footer-title" className={styles.wordmark}>
+              Haz
             </h2>
-            <p className={`type-body ${styles.tagline}`}>
-              Designer of products, identity systems, and small precise
-              things. London, working internationally.
+            <p className={styles.tagline}>
+              Learning with <em>intent</em>
             </p>
           </div>
 
-          <nav className={styles.column} aria-label="Site navigation">
-            <span className={`type-technical ${styles.columnTitle}`}>
-              Index
-            </span>
-            <ul className={styles.linkList}>
-              {NAV_LINKS.map((l) => (
-                <li key={l.href}>
-                  <a className={`type-body ${styles.link}`} href={l.href}>
-                    <span>{l.label}</span>
-                    <span className={styles.linkArrow} aria-hidden>
-                      &rarr;
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <div className={styles.column}>
-            <span className={`type-technical ${styles.columnTitle}`}>
-              Contact
-            </span>
-            <ul className={styles.linkList}>
-              {CONTACT_LINKS.map((l) => (
-                <li key={l.href}>
-                  <a
-                    className={`type-body ${styles.link}`}
-                    href={l.href}
-                    {...(l.external
-                      ? { target: "_blank", rel: "noreferrer noopener" }
-                      : {})}
-                  >
-                    <span>{l.label}</span>
-                    <span className={styles.linkArrow} aria-hidden>
-                      {l.external ? "\u2197" : "\u2192"}
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ul className={styles.nav} aria-label="Footer navigation">
+            {NAV_LINKS.map((l) => (
+              <li key={l.href}>
+                <a
+                  className={styles.navLink}
+                  href={l.href}
+                  {...(l.external
+                    ? { target: "_blank", rel: "noopener noreferrer" }
+                    : {})}
+                >
+                  {l.label}
+                </a>
+              </li>
+            ))}
+          </ul>
         </div>
+      </footer>
 
-        <div className={`type-technical ${styles.bottom}`}>
-          <span>
-            <span className={styles.statusDot} />
-            STATUS &middot; ACTIVE &middot; {new Date().getFullYear()} HAZ.
-          </span>
-          <span>v0.1 &middot; BUILT WITH NEXT</span>
+      <div className={styles.baseline}>
+        <div className={styles.baselineInner}>
+          <span>© {new Date().getFullYear()} Haz.</span>
+          <span>Designed &amp; built · London</span>
         </div>
       </div>
-    </footer>
+    </>
   );
 }

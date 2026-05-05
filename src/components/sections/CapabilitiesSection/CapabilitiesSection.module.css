@@ -2,7 +2,7 @@
   position: relative;
   background: var(--paper);
   padding: var(--space-9) var(--space-7);
-  min-height: 80vh;
+  height: 60vh;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -35,18 +35,28 @@
    ────────────────────────────────────────────────────────────── */
 .abilityRow {
   display: flex;
-  flex-wrap: nowrap;
-  gap: var(--space-5);
-  align-items: stretch;
-  /* `safe center` keeps the row centered while its contents fit,
-     and falls back to flex-start in any unlikely overflow case so
-     the leftmost card is never clipped. */
-  justify-content: safe center;
+  flex-direction: row;
+  gap: 32px;
+  justify-content: center;
+  align-items: center;
 }
 
+/* ──────────────────────────────────────────────────────────────
+   Mobile — match AbilityCard's 768px breakpoint where each card
+   switches to width: 100%. Stack the row vertically so the cards
+   sit one above the other, and release the section's fixed 60vh
+   height so the column can flow to its natural size.
+   ────────────────────────────────────────────────────────────── */
 @media (max-width: 768px) {
+  .section {
+    height: auto;
+    min-height: 60vh;
+  }
+
   .abilityRow {
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-6);
   }
 }
 

@@ -7,10 +7,14 @@
 .dial-stage {
   position: relative;
   width: 100%;
+  margin-top: 0;
+  margin-bottom: 80px;
+  padding-top: 0;
+  padding-bottom: 0;
   /* Carry our own height floor: parent <section> uses min-height: 100vh,
      and `height: 100%` against an auto-height parent collapses to 0,
      hiding the absolutely-positioned dial entirely. */
-  min-height: 100vh;
+  min-height: 120vh;
 }
 
 @media (min-width: 721px) {
