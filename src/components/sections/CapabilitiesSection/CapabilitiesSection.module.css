@@ -14,84 +14,40 @@
   gap: var(--space-7);
 }
 
-.header {
+/* ──────────────────────────────────────────────────────────────
+   Featured abilities — a row of AbilityCards.
+
+   AbilityCard sizes itself with `flex: 0 1 285px` above its mobile
+   breakpoint, meaning 285px is the preferred width but each card
+   is free to shrink to keep the row on a single line. We use
+   `flex-wrap: nowrap` here so the cards genuinely shrink to fit
+   instead of wrapping — at 3 cards × 285px + 2 × 22px gaps = 899px,
+   they reach their max naturally on viewports ≥ ~971px and shrink
+   gracefully below that.
+
+   At ≤ 768px AbilityCard switches each card to width: 100%; we
+   flip the row back to `flex-wrap: wrap` so they stack one per
+   row instead of all squeezing together.
+   ────────────────────────────────────────────────────────────── */
+.abilityRow {
   display: flex;
-  flex-direction: column;
+  flex-wrap: nowrap;
   gap: var(--space-5);
-  max-width: 720px;
+  align-items: stretch;
+  /* `safe center` keeps the row centered while its contents fit,
+     and falls back to flex-start in any unlikely overflow case so
+     the leftmost card is never clipped. */
+  justify-content: safe center;
 }
 
-.eyebrow {
-  color: var(--ink-62);
-}
-
-.heading {
-  margin: 0;
-  color: var(--ink);
-}
-
-.lede {
-  color: var(--ink-82);
-  margin: 0;
-  max-width: 56ch;
-}
-
-.grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-5);
-  border-top: 1px solid var(--ink-22);
-  padding-top: var(--space-7);
-}
-
-.card {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-3);
-  padding: var(--space-6);
-  border: 1px solid var(--ink-22);
-  background: var(--paper);
-  position: relative;
-}
-
-.cardSlug {
-  color: var(--accent);
-}
-
-.cardTitle {
-  margin: 0;
-  color: var(--ink);
-}
-
-.cardBody {
-  margin: 0;
-  color: var(--ink-82);
-}
-
-.cornerLabel {
-  position: absolute;
-  top: var(--space-7);
-  right: var(--space-7);
-  color: var(--ink-42);
-}
-
-@media (max-width: 1024px) {
-  .grid {
-    grid-template-columns: repeat(2, 1fr);
+@media (max-width: 768px) {
+  .abilityRow {
+    flex-wrap: wrap;
   }
 }
 
 @media (max-width: 640px) {
   .section {
     padding: var(--space-9) var(--space-5);
-  }
-
-  .grid {
-    grid-template-columns: 1fr;
-  }
-
-  .cornerLabel {
-    top: var(--space-5);
-    right: var(--space-5);
   }
 }

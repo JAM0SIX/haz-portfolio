@@ -413,7 +413,7 @@ function HeadingItem({
             textTransform: "uppercase",
           }}
         >
-          {project.year} · {project.role}
+          {project.year}, {project.role}
         </div>
 
         {/* Accordion body — always mounted so the cross-fade works on switch. */}
@@ -1029,7 +1029,7 @@ function MobileActiveCard({
           textTransform: "uppercase",
         }}
       >
-        {project.year} · {project.role}
+        {project.year}, {project.role}
       </div>
 
       <div

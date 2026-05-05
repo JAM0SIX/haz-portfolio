@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { DM_Sans, Spectral } from "next/font/google";
+import Menu from "@/components/Menu/Menu";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -29,7 +30,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${dmSans.variable} ${spectral.variable}`}>
-      <body>{children}</body>
+      <body>
+        <Menu />
+        {children}
+      </body>
     </html>
   );
 }

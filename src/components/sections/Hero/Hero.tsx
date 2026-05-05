@@ -1,36 +1,20 @@
+import HeroCopy from "@/components/HeroCopy/HeroCopy";
+import HeroBackdrop from "./HeroBackdrop";
 import styles from "./Hero.module.css";
 
 export default function Hero() {
   return (
-    <section className={styles.section} aria-labelledby="hero-title">
-      <p className={`type-technical ${styles.cornerLabel}`}>P/00 · INDEX</p>
-      <p className={`type-technical ${styles.cornerLabelRight}`}>
-        STATUS · ACTIVE
-      </p>
+    <section id="top" className={styles.section} aria-label="Hero">
+      {/* Cursor-tracked dot field. Sits behind HeroCopy via z-index;
+          pointer events pass through so HeroCopy's interactive
+          words still receive clicks. */}
+      <HeroBackdrop />
 
-      <div className={styles.inner}>
-        <p className={`type-technical ${styles.eyebrow}`}>
-          PORTFOLIO · 2026
-        </p>
-
-        <h1 id="hero-title" className={`type-hero ${styles.wordmark}`}>
-          Haz<em>.</em>
-        </h1>
-
-        <p className={`type-body ${styles.lede}`}>
-          Designer of products, identity systems, and small precise things.
-          Currently building tooling at the edge of design and engineering.
-          Previously at GWI, LexisNexis, and a few others worth mentioning.
-        </p>
-
-        <div className={styles.actions}>
-          <a href="#dial" className="btn btn-primary">
-            <span data-text="Begin">Begin</span>
-            <span className="btn-arrow" aria-hidden>
-              ↓
-            </span>
-          </a>
-        </div>
+      {/* Wrapping HeroCopy in a relatively-positioned div lifts it
+          above the absolutely-positioned backdrop without having to
+          modify HeroCopy's own styles. */}
+      <div className={styles.copy}>
+        <HeroCopy />
       </div>
     </section>
   );

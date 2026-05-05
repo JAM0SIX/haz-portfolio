@@ -7,8 +7,16 @@
 .dial-stage {
   position: relative;
   width: 100%;
-  height: 100%;
-  overflow: hidden;
+  /* Carry our own height floor: parent <section> uses min-height: 100vh,
+     and `height: 100%` against an auto-height parent collapses to 0,
+     hiding the absolutely-positioned dial entirely. */
+  min-height: 100vh;
+}
+
+@media (min-width: 721px) {
+  .dial-stage {
+    overflow: hidden;
+  }
 }
 
 /* Crosshair cursor scoped to the dial only — no site-wide override. */

@@ -27,11 +27,8 @@ export default function AboutSection() {
       className={styles.section}
       aria-labelledby="about-title"
     >
-      <p className={`type-technical ${styles.cornerLabel}`}>ABOUT / 004</p>
-
       <div className={styles.inner}>
         <div className={styles.header}>
-          <p className={`type-technical ${styles.eyebrow}`}>ABOUT / 004</p>
           <h2 id="about-title" className={`type-display ${styles.heading}`}>
             About.
           </h2>

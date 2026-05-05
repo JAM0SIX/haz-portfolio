@@ -21,10 +21,6 @@
   max-width: 720px;
 }
 
-.eyebrow {
-  color: var(--ink-62);
-}
-
 .heading {
   margin: 0;
   color: var(--ink);
@@ -75,13 +71,6 @@
   margin: 0;
 }
 
-.cornerLabel {
-  position: absolute;
-  top: var(--space-7);
-  right: var(--space-7);
-  color: var(--ink-42);
-}
-
 @media (max-width: 880px) {
   .grid {
     grid-template-columns: 1fr;
@@ -92,10 +81,5 @@
 @media (max-width: 640px) {
   .section {
     padding: var(--space-9) var(--space-5);
-  }
-
-  .cornerLabel {
-    top: var(--space-5);
-    right: var(--space-5);
   }
 }

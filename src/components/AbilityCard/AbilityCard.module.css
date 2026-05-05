@@ -1,0 +1,513 @@
+/*
+ * AbilityCard.module.css — Haz. design system
+ *
+ * Hover behaviour spec:
+ *   - At rest: 4 L-corners visible (ink-22 hairlines). No connecting lines.
+ *   - On hover: 4 sides each grow as TWO half-lines, one from each adjacent
+ *     corner, meeting in the middle of the edge. 8 half-lines total, all
+ *     animating simultaneously over 650ms with --ease-default.
+ *   - Chamfer (TL + BR cuts) animates in alongside.
+ *   - On mouse-leave: lines retract along the same axis (the transition
+ *     drives both directions automatically).
+ *
+ * Implementation: each half-line is a span anchored at its origin corner
+ * with transform-origin set so `scaleX`/`scaleY` grows it AWAY from that
+ * corner toward the edge midpoint. The visible arm stays from corner-end
+ * (16px from the page edge) to the centre of the side (50%). At rest the
+ * scale is 0, on hover it's 1.
+ */
+
+.card {
+  position: relative;
+  /*
+   * Flexible width: 285px is the preferred (and effective max) size,
+   * but the card is allowed to shrink so a row of 3 cards stays on a
+   * single line in narrower-than-comfortable viewports. min-width: 0
+   * lets the inner content (heading, body) shrink below its intrinsic
+   * width if necessary — without it, flex would refuse to shrink the
+   * card past its content size.
+   *
+   * On mobile (≤ 768px, see media query below) the card switches to
+   * width: 100% so it fills its row and stacks via flex-wrap: wrap on
+   * the parent.
+   */
+  flex: 0 1 285px;
+  min-width: 0;
+  height: 100%;
+  min-height: 320px;
+  background: var(--paper);
+  font-family: var(--font-sans);
+  color: var(--ink);
+  cursor: pointer;
+
+  clip-path: polygon(0 0, 100% 0, 100% 100%, 100% 100%, 0 100%, 0 0);
+  transition:
+    clip-path var(--dur-slower) var(--ease-default),
+    background-color var(--dur-base) var(--ease-default);
+}
+
+.card:hover,
+.card:focus-within {
+  clip-path: polygon(
+    var(--chamfer-size) 0,
+    100% 0,
+    100% calc(100% - var(--chamfer-size)),
+    calc(100% - var(--chamfer-size)) 100%,
+    0 100%,
+    0 var(--chamfer-size)
+  );
+}
+
+/* -------------------------------------------------------------------------- */
+/* L-corners — ALWAYS visible (ink-22 at rest, ink on hover for a small lift) */
+/* -------------------------------------------------------------------------- */
+
+/* -------------------------------------------------------------------------- */
+/* Static L-corners (TR + BL only).                                           */
+/*                                                                            */
+/* These two don't morph — they stay as right-angle Ls throughout. Drawn      */
+/* with CSS borders on a 2× chamfer-size box, like before.                    */
+/* -------------------------------------------------------------------------- */
+
+.cornerBase {
+  position: absolute;
+  width: calc(var(--chamfer-size) * 2);
+  height: calc(var(--chamfer-size) * 2);
+  /*
+   * Solid --ink at every state. Matches the side-lines and the SVG morph
+   * path so the whole frame reads at a single, consistent opacity from
+   * rest through hover. No --ink-22 at rest — the rest treatment is
+   * "corners only, no connecting lines yet", not "faded corners".
+   */
+  border: 0 solid var(--ink);
+  pointer-events: none;
+  border-radius: var(--radius-none);
+}
+
+.cornerTR {
+  composes: cornerBase;
+  top: 0;
+  right: 0;
+  border-top-width: var(--border-default);
+  border-right-width: var(--border-default);
+}
+
+.cornerBL {
+  composes: cornerBase;
+  bottom: 0;
+  left: 0;
+  border-bottom-width: var(--border-default);
+  border-left-width: var(--border-default);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Morphing corners (TL + BR) — single SVG path, two states.                  */
+/*                                                                            */
+/* At rest the path traces a right-angle L with a duplicated pinch point at   */
+/* the corner (4 segments). On hover the pinch point separates and slides     */
+/* along the chamfer cut, turning the L into a chevron-with-diagonal — same   */
+/* path, same stroke, just morphed. Browser interpolation handles the         */
+/* in-between frames cleanly because both states are 4 points (M L L L).      */
+/*                                                                            */
+/* The SVG viewBox is 0 0 16 16 (matching the 2× chamfer-size corner box).    */
+/* The path uses non-scaling-stroke so the 1px hairline stays 1px no matter   */
+/* how the SVG is scaled in CSS.                                              */
+/* -------------------------------------------------------------------------- */
+
+.morphCorner {
+  position: absolute;
+  width: calc(var(--chamfer-size) * 2);
+  height: calc(var(--chamfer-size) * 2);
+  pointer-events: none;
+  overflow: visible;
+}
+.morphCornerTL {
+  composes: morphCorner;
+  top: 0;
+  left: 0;
+}
+.morphCornerBR {
+  composes: morphCorner;
+  bottom: 0;
+  right: 0;
+}
+
+/*
+ * The path itself.
+ *
+ * Stroke alignment note: SVG strokes centre on the geometric path. With
+ * `stroke-width: 1` at coordinate `x=0`, the stroke renders from `x=-0.5`
+ * to `x=+0.5` — half outside the SVG viewBox, antialiased over two
+ * physical pixels. That looks fuzzier than the CSS-rendered side-lines
+ * (which are pixel-aligned `background` rectangles at `top:0`).
+ *
+ * Fix: inset the strokes that lie on the SVG box edges by 0.5 user-units.
+ * The vertical arm sits at `x=0.5` (renders as a crisp 1px column at
+ * physical x=0); the horizontal arm sits at `y=0.5` (renders as a crisp
+ * 1px row at physical y=0). The free endpoints `(16, …)` and `(…, 16)`
+ * stay at the box edges so they butt cleanly against the side-lines.
+ *
+ * Combined with `shape-rendering: crispEdges`, this makes the morph
+ * stroke visually identical thickness to the CSS side-lines.
+ *
+ * Rest state has a duplicated pinch point at the inset corner so it
+ * interpolates to the chevron+diagonal on hover with the same point
+ * count and command sequence (M L L L).
+ */
+.morphPath {
+  fill: none;
+  /* Solid --ink — matches every other stroke in the frame. */
+  stroke: var(--ink);
+  stroke-width: var(--border-default);
+  vector-effect: non-scaling-stroke;
+  shape-rendering: crispEdges;
+  stroke-linecap: butt;
+  stroke-linejoin: miter;
+  transition: d var(--dur-slower) var(--ease-default);
+}
+
+.morphCornerTL .morphPath {
+  d: path("M 0.5 16 L 0.5 0.5 L 0.5 0.5 L 16 0.5");
+}
+.morphCornerBR .morphPath {
+  d: path("M 15.5 0 L 15.5 15.5 L 15.5 15.5 L 0 15.5");
+}
+
+.card:hover .morphCornerTL .morphPath,
+.card:focus-within .morphCornerTL .morphPath {
+  d: path("M 0.5 16 L 0.5 8 L 8 0.5 L 16 0.5");
+}
+.card:hover .morphCornerBR .morphPath,
+.card:focus-within .morphCornerBR .morphPath {
+  d: path("M 15.5 0 L 15.5 8 L 8 15.5 L 0 15.5");
+}
+
+/* -------------------------------------------------------------------------- */
+/* Side-lines — 4 full-edge lines, hidden at rest, drawn on hover.            */
+/*                                                                            */
+/* Choreography:                                                              */
+/*   - Top line + right line both originate from the TR corner.               */
+/*       Top grows leftward across the top edge, ending at the TL chamfer.    */
+/*       Right grows downward along the right edge, ending at the BR chamfer. */
+/*   - Bottom line + left line both originate from the BL corner.             */
+/*       Bottom grows rightward across the bottom edge, ending at BR chamfer. */
+/*       Left grows upward along the left edge, ending at the TL chamfer.    */
+/*                                                                            */
+/* Each line runs the full edge corner-to-corner (no half-line midpoint       */
+/* split). The clip-path chamfer on the card crops the line ends visually so  */
+/* they stop at the chamfer cut even though they're geometrically full-edge.  */
+/* -------------------------------------------------------------------------- */
+
+.lineBase {
+  position: absolute;
+  background-color: var(--ink);
+  pointer-events: none;
+  transition: transform var(--dur-slower) var(--ease-default);
+  /* Avoid sub-pixel feathering when scaling a 1px line. */
+  will-change: transform;
+}
+
+.topLine {
+  composes: lineBase;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: var(--border-default);
+  transform: scaleX(0);
+  /* Origin: right edge — line grows leftward from TR toward TL. */
+  transform-origin: right center;
+}
+
+.rightLine {
+  composes: lineBase;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: var(--border-default);
+  transform: scaleY(0);
+  /* Origin: top edge — line grows downward from TR toward BR. */
+  transform-origin: center top;
+}
+
+.bottomLine {
+  composes: lineBase;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: var(--border-default);
+  transform: scaleX(0);
+  /* Origin: left edge — line grows rightward from BL toward BR. */
+  transform-origin: left center;
+}
+
+.leftLine {
+  composes: lineBase;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--border-default);
+  transform: scaleY(0);
+  /* Origin: bottom edge — line grows upward from BL toward TL. */
+  transform-origin: center bottom;
+}
+
+.card:hover .topLine,
+.card:focus-within .topLine,
+.card:hover .bottomLine,
+.card:focus-within .bottomLine {
+  transform: scaleX(1);
+}
+
+.card:hover .leftLine,
+.card:focus-within .leftLine,
+.card:hover .rightLine,
+.card:focus-within .rightLine {
+  transform: scaleY(1);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Content area                                                               */
+/* -------------------------------------------------------------------------- */
+
+.content {
+  position: absolute;
+  top: var(--space-6);
+  right: var(--space-6);
+  left: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: flex-start;
+  gap: var(--space-4);
+  padding: 0;
+  background: var(--paper);
+  /*
+   * Container hugs its content. The body and CTA below are present in
+   * the layout at every state but invisible at rest (opacity 0 + blur),
+   * so the heading is never clipped by a fixed height — it sizes to
+   * whatever title is passed in, including multi-line wraps on the
+   * 285px card width.
+   */
+}
+
+.heading {
+  margin: 0;
+  font-family: inherit;
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  letter-spacing: var(--track-wide);
+  line-height: var(--leading-snug);
+  color: var(--ink);
+}
+
+/*
+ * Body and CTA share a dissolve+blur reveal. At rest both are rendered
+ * in their final layout positions but fully invisible (opacity 0,
+ * filter: blur(4px)) so they don't shift the heading container. On
+ * hover they resolve to (opacity 1, blur(0)) over --dur-base. The body
+ * starts 100ms in, the CTA 200ms in, giving a soft top-down cascade.
+ */
+.description {
+  margin: 0;
+  font-family: inherit;
+  font-size: var(--text-base);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--track-normal);
+  line-height: var(--leading-normal);
+  color: var(--ink-62);
+  opacity: 0;
+  filter: blur(4px);
+  transition:
+    opacity var(--dur-base) var(--ease-out) 100ms,
+    filter var(--dur-base) var(--ease-out) 100ms;
+}
+
+.card:hover .description,
+.card:focus-within .description {
+  opacity: 1;
+  filter: blur(0);
+}
+
+/* -------------------------------------------------------------------------- */
+/* CTA — caps-tracked label + sliding arrow.                                  */
+/* -------------------------------------------------------------------------- */
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: 0;
+  margin: 0;
+  font-family: inherit;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--track-caps);
+  line-height: var(--leading-tight);
+  text-transform: uppercase;
+  color: var(--accent);
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  /* Same dissolve+blur as the body, 100ms behind it, so the two pieces
+     resolve in cascade rather than at the same instant. */
+  opacity: 0;
+  filter: blur(4px);
+  transition:
+    opacity var(--dur-base) var(--ease-out) 200ms,
+    filter var(--dur-base) var(--ease-out) 200ms,
+    color var(--dur-base) var(--ease-default),
+    font-weight var(--dur-base) var(--ease-default);
+}
+
+.card:hover .cta,
+.card:focus-within .cta {
+  opacity: 1;
+  filter: blur(0);
+}
+
+.cta:hover,
+.cta:focus-visible {
+  color: var(--accent-hover);
+  font-weight: var(--weight-semibold);
+  outline: none;
+}
+
+.ctaLabel {
+  position: relative;
+  display: inline-block;
+}
+.ctaLabel::before {
+  content: attr(data-text);
+  display: block;
+  height: 0;
+  overflow: hidden;
+  visibility: hidden;
+  font-weight: var(--weight-semibold);
+}
+
+.ctaArrow {
+  display: inline-block;
+  transition: transform var(--dur-base) var(--ease-default);
+}
+
+.cta:hover .ctaArrow,
+.cta:focus-visible .ctaArrow {
+  transform: translateX(3px);
+}
+
+/* -------------------------------------------------------------------------- */
+/* Reduced motion — keep the reveal but drop the directional draw.            */
+/* -------------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .content,
+  .description,
+  .cta,
+  .ctaArrow,
+  .lineBase,
+  .cornerBase,
+  .morphPath {
+    transition: none;
+  }
+  .card:hover,
+  .card:focus-within {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 100% 100%, 0 100%, 0 0);
+  }
+  /* Side-lines just appear instead of drawing. */
+  .card:hover .lineBase,
+  .card:focus-within .lineBase {
+    transform: none;
+  }
+  /* Morphing corners snap to their hover shape. */
+  .card:hover .morphCornerTL .morphPath,
+  .card:focus-within .morphCornerTL .morphPath {
+    d: path("M 0.5 16 L 0.5 8 L 8 0.5 L 16 0.5");
+  }
+  .card:hover .morphCornerBR .morphPath,
+  .card:focus-within .morphCornerBR .morphPath {
+    d: path("M 15.5 0 L 15.5 8 L 8 15.5 L 0 15.5");
+  }
+  /* Drop the blur entirely under reduced motion — straight opacity flip. */
+  .description,
+  .cta {
+    filter: none;
+  }
+}
+
+/* -------------------------------------------------------------------------- */
+/* Mobile — below 768px.                                                      */
+/*                                                                            */
+/* The card is permanently in its "hovered" state on mobile: full ink frame   */
+/* drawn, TL/BR corners chamfered with their diagonals, body + CTA visible.   */
+/* Touch devices can't hover, so opening the page should show everything      */
+/* immediately rather than wait for a state the user can't trigger.           */
+/*                                                                            */
+/* Type scale follows the design system: --text-xl (28) → --text-lg (20)     */
+/* for the heading. Body (14) and Caps (11) are already at sensible mobile   */
+/* sizes per the type scale and stay put.                                     */
+/* -------------------------------------------------------------------------- */
+
+@media (max-width: 768px) {
+  /* Fluid card. */
+  .card {
+    /* Override the desktop `flex: 0 1 285px` so each card fills its
+       row (and the parent's flex-wrap: wrap stacks them one per row).
+       width: 100% alone isn't enough because flex-basis still
+       constrains the layout calculation. */
+    flex: 0 0 100%;
+    width: 100%;
+    min-height: 240px;
+    /* No transitions on mobile — everything renders in its end state. */
+    clip-path: polygon(
+      var(--chamfer-size) 0,
+      100% 0,
+      100% calc(100% - var(--chamfer-size)),
+      calc(100% - var(--chamfer-size)) 100%,
+      0 100%,
+      0 var(--chamfer-size)
+    );
+    transition: none;
+  }
+
+  /* Heading drops one step on the type scale (Title → Heading role). */
+  .heading {
+    font-size: var(--text-lg);
+    /* Heading role uses --track-wide (= 0.04em); the desktop card already
+       does, so we only need to reset line-height if the smaller size
+       feels off. --leading-snug stays correct. */
+  }
+
+  /* Frame: side-lines fully drawn, no transition. */
+  .lineBase {
+    transition: none;
+  }
+  .topLine,
+  .bottomLine {
+    transform: scaleX(1);
+  }
+  .leftLine,
+  .rightLine {
+    transform: scaleY(1);
+  }
+
+  /* Morph corners: snap to hover paths, no transition. */
+  .morphPath {
+    transition: none;
+  }
+  .morphCornerTL .morphPath {
+    d: path("M 0.5 16 L 0.5 8 L 8 0.5 L 16 0.5");
+  }
+  .morphCornerBR .morphPath {
+    d: path("M 15.5 0 L 15.5 8 L 8 15.5 L 0 15.5");
+  }
+
+  /* Body + CTA: visible immediately, no blur or fade. */
+  .description,
+  .cta {
+    opacity: 1;
+    filter: none;
+    transition: color var(--dur-base) var(--ease-default);
+  }
+}

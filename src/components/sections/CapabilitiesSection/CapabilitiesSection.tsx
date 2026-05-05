@@ -1,35 +1,36 @@
+import AbilityCard from "@/components/AbilityCard/AbilityCard";
 import styles from "./CapabilitiesSection.module.css";
 
-const CAPABILITIES = [
+/* Featured abilities surfaced under the section corner-label.
+   Each card reveals body + CTA on hover/focus; tweak copy and
+   hrefs to point at the live case studies. */
+const FEATURED_ABILITIES: {
+  title: string;
+  description: string;
+  ctaLabel: string;
+  href: string;
+  external?: boolean;
+}[] = [
   {
-    slug: "CAP/01",
-    title: "Product strategy",
-    body: "Roadmap shaping, narrative work, north-star artefacts, and the workshops that make them stick.",
+    title: "Strategy",
+    description:
+      "Diagnose, frame, decide. North-star artefacts and the workshops that turn them into roadmaps everyone can ship from.",
+    ctaLabel: "VIEW APPROACH",
+    href: "#strategy",
   },
   {
-    slug: "CAP/02",
-    title: "Identity systems",
-    body: "Marks, type systems, and the rules that hold them together at scale across surfaces.",
+    title: "Systems",
+    description:
+      "Tokens, components, governance. Design systems that hold their shape across surfaces, teams, and a year of changing requirements.",
+    ctaLabel: "VIEW SYSTEM",
+    href: "#systems",
   },
   {
-    slug: "CAP/03",
-    title: "Design ops",
-    body: "Component libraries, contribution models, and the tooling that keeps a system honest.",
-  },
-  {
-    slug: "CAP/04",
-    title: "Motion",
-    body: "Animation language, micro-interactions, and the easings that make a product feel inevitable.",
-  },
-  {
-    slug: "CAP/05",
-    title: "Dataviz",
-    body: "Charts that pull their weight \u2014 unified grammar, source-grounded summaries, no decoration.",
-  },
-  {
-    slug: "CAP/06",
-    title: "Frontend",
-    body: "Production-ready React, TypeScript, and CSS. The handoff is the pull request.",
+    title: "Production",
+    description:
+      "TypeScript, motion, accessibility. Hand-off is the pull request — interfaces that ship, scale, and stay legible after launch.",
+    ctaLabel: "VIEW WORK",
+    href: "#production",
   },
 ];
 
@@ -38,36 +39,19 @@ export default function CapabilitiesSection() {
     <section
       id="capabilities"
       className={styles.section}
-      aria-labelledby="capabilities-title"
+      aria-label="Capabilities"
     >
-      <p className={`type-technical ${styles.cornerLabel}`}>
-        CAPABILITIES / 003
-      </p>
-
       <div className={styles.inner}>
-        <div className={styles.header}>
-          <p className={`type-technical ${styles.eyebrow}`}>
-            CAPABILITIES / 003
-          </p>
-          <h2
-            id="capabilities-title"
-            className={`type-display ${styles.heading}`}
-          >
-            What I do.
-          </h2>
-          <p className={`type-body ${styles.lede}`}>
-            Six things, in roughly the order I reach for them on any given
-            week. Most projects involve at least three.
-          </p>
-        </div>
-
-        <div className={styles.grid}>
-          {CAPABILITIES.map((c) => (
-            <article key={c.slug} className={styles.card}>
-              <span className={`type-label ${styles.cardSlug}`}>{c.slug}</span>
-              <h3 className={`type-heading ${styles.cardTitle}`}>{c.title}</h3>
-              <p className={`type-body ${styles.cardBody}`}>{c.body}</p>
-            </article>
+        <div className={styles.abilityRow}>
+          {FEATURED_ABILITIES.map((a) => (
+            <AbilityCard
+              key={a.title}
+              title={a.title}
+              description={a.description}
+              ctaLabel={a.ctaLabel}
+              href={a.href}
+              external={a.external}
+            />
           ))}
         </div>
       </div>

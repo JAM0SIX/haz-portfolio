@@ -2,21 +2,12 @@
   position: relative;
   min-height: 100vh;
   background: var(--paper);
-  overflow: hidden;
 }
 
-.eyebrow {
-  position: absolute;
-  top: var(--space-7);
-  left: var(--space-7);
-  color: var(--ink-42);
-  z-index: 2;
-  pointer-events: none;
-}
-
-@media (max-width: 720px) {
-  .eyebrow {
-    top: var(--space-5);
-    left: var(--space-5);
+/* Clip the dial's overflow on desktop only — on mobile the section
+   grows with content and the page handles vertical scroll naturally. */
+@media (min-width: 721px) {
+  .section {
+    overflow: hidden;
   }
 }

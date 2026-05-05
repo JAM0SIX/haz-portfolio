@@ -16,7 +16,11 @@ const CONTACT_LINKS = [
 
 export default function Footer() {
   return (
-    <footer className={styles.footer} aria-labelledby="footer-title">
+    <footer
+      id="contact"
+      className={styles.footer}
+      aria-labelledby="footer-title"
+    >
       <div className={styles.inner}>
         <div className={styles.grid}>
           <div className={styles.brand}>
