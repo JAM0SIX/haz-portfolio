@@ -24,30 +24,32 @@ export default function Footer() {
         <CursorDotField variant="ink" />
 
         <div className={styles.inner}>
-          <div className={styles.mark}>
-            <h2 id="footer-title" className={styles.wordmark}>
-              Haz
-            </h2>
-            <p className={styles.tagline}>
-              Learning with <em>intent</em>
-            </p>
+          <div className={styles.footerRow}>
+            <div className={styles.mark}>
+              <h2 id="footer-title" className={styles.wordmark}>
+                Haz
+              </h2>
+              <ul className={styles.nav} aria-label="Footer navigation">
+                {NAV_LINKS.map((l) => (
+                  <li key={l.href}>
+                    <a
+                      className={styles.navLink}
+                      href={l.href}
+                      {...(l.external
+                        ? { target: "_blank", rel: "noopener noreferrer" }
+                        : {})}
+                    >
+                      {l.label}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
           </div>
 
-          <ul className={styles.nav} aria-label="Footer navigation">
-            {NAV_LINKS.map((l) => (
-              <li key={l.href}>
-                <a
-                  className={styles.navLink}
-                  href={l.href}
-                  {...(l.external
-                    ? { target: "_blank", rel: "noopener noreferrer" }
-                    : {})}
-                >
-                  {l.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <p className={styles.tagline}>
+            Learning with <em>intent</em>
+          </p>
         </div>
       </footer>
 

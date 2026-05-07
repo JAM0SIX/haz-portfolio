@@ -162,11 +162,28 @@
 
 /* ─────────────────────────────────────────────────────────────
    Responsive — staged collapse.
-   At ≤980px the hero stacks (portrait + side go full-width) but
-   the traits remain 3-up. At ≤640px the whole grid becomes a
-   single column.
+   Portrait + caption stay on one row (3-col hero) until mobile.
+   At ≤640px the shell becomes one column: hero image, then hero
+   side (CTA + caption), then traits / fields.
    ───────────────────────────────────────────────────────────── */
-@media (max-width: 980px) {
+@media (max-width: 640px) {
+  .section {
+    padding: var(--space-9) var(--space-5);
+  }
+
+  /* Single column that can shrink inside padded section — avoids implicit
+     extra tracks / horizontal overflow from grid items wider than the shell. */
+  .shell {
+    grid-template-columns: minmax(0, 1fr);
+    row-gap: var(--space-7);
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .shell > * {
+    min-width: 0;
+  }
+
   .heroImage,
   .heroSide {
     grid-column: 1 / -1;
@@ -174,17 +191,11 @@
 
   .heroSide {
     flex-direction: row;
-  }
-}
-
-@media (max-width: 640px) {
-  .section {
-    padding: var(--space-9) var(--space-5);
-  }
-
-  .shell {
-    grid-template-columns: 1fr;
-    row-gap: var(--space-7);
+    flex-wrap: wrap;
+    width: 100%;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: var(--space-4);
   }
 
   .trait,
@@ -195,6 +206,13 @@
   .traitHeading,
   .fieldsHeading {
     font-size: var(--text-lg);
+  }
+
+  /* Allow “Fields of work” chips to wrap instead of forcing one overflowing row. */
+  .fieldsList {
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    row-gap: var(--space-3);
   }
 
   .fieldsList li:not(:last-child)::after {

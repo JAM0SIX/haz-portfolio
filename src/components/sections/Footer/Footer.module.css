@@ -15,24 +15,28 @@
   max-width: 1320px;
   margin: 0 auto;
   display: flex;
-  gap: var(--space-9);
-  align-items: end;
+  flex-direction: column;
   padding: var(--space-9);
   height: 80vh;
 }
 
-/* Markup order is <h2 wordmark> then <p tagline>, but we want the
-   wordmark sitting at the very bottom of .mark so its bottom edge
-   aligns with the bottom-aligned .nav sibling. column-reverse +
-   justify-flex-start packs the wordmark at the bottom of the
-   column with the tagline floating above it as a lead — flipping
-   the visual order without touching the JSX (which keeps reading
-   order intact for assistive tech). */
+/* Row band for wordmark + nav; tagline follows in DOM (single copy). */
+.footerRow {
+  display: flex;
+  flex-flow: row;
+  width: 100%;
+  min-width: 0;
+}
+
+/* Wordmark and nav share one row; nav stacks links on the right. */
 .mark {
   display: flex;
-  flex-direction: column-reverse;
+  flex-direction: row;
   justify-content: flex-start;
-  gap: var(--space-5);
+  align-items: flex-end;
+  gap: var(--space-9);
+  width: 100%;
+  min-width: 0;
 }
 
 .wordmark {
@@ -52,6 +56,7 @@
   line-height: var(--leading-snug);
   color: var(--paper);
   margin: 0;
+  margin-top: auto;
 }
 
 .tagline em {
@@ -69,6 +74,7 @@
   list-style: none;
   margin: 0 0 0 auto;
   padding: 0;
+  flex-shrink: 0;
 }
 
 .nav li {
@@ -113,26 +119,20 @@
   color: rgba(245, 243, 238, 0.42);
 }
 
+/* Tablet / small laptop: relax vertical rhythm; wordmark + nav stay one row
+   (title left, links right — same as wide desktop). */
 @media (max-width: 980px) {
   .inner {
-    flex-direction: column;
     height: auto;
     padding: var(--space-7);
   }
 
-  /* On mobile the bottom-alignment goal disappears (the layout
-     stacks vertically), so restore the natural reading order:
-     wordmark first, tagline below as its subtitle. */
-  .mark {
-    flex-direction: column;
-    justify-content: flex-end;
-  }
-
-  .wordmark {
-    font-size: clamp(120px, 32vw, 180px);
+  .footerRow {
+    margin-top: 0;
   }
 
   .tagline {
+    margin-top: var(--space-7);
     font-size: var(--text-lg);
   }
 
@@ -141,5 +141,25 @@
     align-items: flex-start;
     gap: var(--space-3);
     padding: var(--space-5) var(--space-7);
+  }
+}
+
+/* Phone only: stack mark column-wise with nav above wordmark. */
+@media (max-width: 640px) {
+  .mark {
+    flex-direction: column;
+    align-items: stretch;
+    gap: var(--space-7);
+  }
+
+  .nav {
+    order: 1;
+    align-items: flex-start;
+    margin-left: 0;
+  }
+
+  .wordmark {
+    order: 2;
+    font-size: clamp(120px, 32vw, 180px);
   }
 }

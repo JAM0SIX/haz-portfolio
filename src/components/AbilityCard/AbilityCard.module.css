@@ -46,6 +46,27 @@
     background-color var(--dur-base) var(--ease-default);
 }
 
+.metricCard {
+  flex: initial;
+  min-height: 172px;
+  height: 172px;
+  background: transparent;
+}
+
+.metricCard .content {
+  background: transparent;
+}
+
+.metricCard:hover,
+.metricCard:focus-within {
+  background: var(--paper);
+}
+
+.metricCard:hover .content,
+.metricCard:focus-within .content {
+  background: var(--paper);
+}
+
 .card:hover,
 .card:focus-within {
   clip-path: polygon(
@@ -290,6 +311,13 @@
    */
 }
 
+.metricContent {
+  bottom: var(--space-5);
+  justify-content: space-between;
+  gap: var(--space-3);
+  height: calc(100% - (var(--space-5) * 2));
+}
+
 .heading {
   margin: 0;
   font-family: inherit;
@@ -298,6 +326,14 @@
   letter-spacing: var(--track-wide);
   line-height: var(--leading-snug);
   color: var(--ink);
+}
+
+.metricHeading {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: var(--weight-bold);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: var(--track-wide);
+  line-height: 1;
 }
 
 /*
@@ -320,6 +356,12 @@
   transition:
     opacity var(--dur-base) var(--ease-out) 100ms,
     filter var(--dur-base) var(--ease-out) 100ms;
+}
+
+.metricDescription {
+  font-size: var(--text-xs);
+  letter-spacing: var(--track-caps);
+  text-transform: uppercase;
 }
 
 .card:hover .description,
@@ -477,6 +519,10 @@
     /* Heading role uses --track-wide (= 0.04em); the desktop card already
        does, so we only need to reset line-height if the smaller size
        feels off. --leading-snug stays correct. */
+  }
+
+  .metricHeading {
+    font-size: clamp(1.8rem, 7vw, 2.25rem);
   }
 
   /* Frame: side-lines fully drawn, no transition. */

@@ -74,3 +74,7 @@ export const PROJECTS: readonly Project[] = [
     ],
   },
 ] as const;
+
+export function getProjectById(id: string): Project | undefined {
+  return PROJECTS.find((p) => p.id === id);
+}

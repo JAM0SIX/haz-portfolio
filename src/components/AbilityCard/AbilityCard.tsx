@@ -38,11 +38,16 @@ export type AbilityCardProps = {
   title: string;
   description: ReactNode;
   /** Caps-tracked CTA label, e.g. "VIEW APPROACH". */
-  ctaLabel: string;
+  ctaLabel?: string;
   /** Anchor href for the CTA. External links open in a new tab. */
-  href: string;
+  href?: string;
   /** Force-open external behaviour (icon hint, target, rel). */
   external?: boolean;
+  /** Visual preset for content treatment while preserving card frame transitions. */
+  variant?: "default" | "metric";
+  /** Optional extra class for layout context. */
+  className?: string;
+  tabIndex?: number;
 };
 
 export default function AbilityCard({
@@ -51,9 +56,41 @@ export default function AbilityCard({
   ctaLabel,
   href,
   external = false,
+  variant = "default",
+  className,
+  tabIndex,
 }: AbilityCardProps) {
+  const cardClass = [
+    styles.card,
+    variant === "metric" ? styles.metricCard : "",
+    className ?? "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const contentClass = [
+    styles.content,
+    variant === "metric" ? styles.metricContent : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const headingClass = [
+    styles.heading,
+    variant === "metric" ? styles.metricHeading : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const descriptionClass = [
+    styles.description,
+    variant === "metric" ? styles.metricDescription : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
   return (
-    <article className={styles.card}>
+    <article className={cardClass} tabIndex={tabIndex}>
       {/* Static L-corners (TR + BL) — never morph. */}
       <span className={styles.cornerTR} aria-hidden="true" />
       <span className={styles.cornerBL} aria-hidden="true" />
@@ -89,23 +126,25 @@ export default function AbilityCard({
       {/* Content. Heading is always visible; description + CTA are
           laid out at rest but invisible (opacity 0 + blur 4px) so
           the heading never reflows. */}
-      <div className={styles.content}>
-        <h3 className={styles.heading}>{title}</h3>
-        <p className={styles.description}>{description}</p>
+      <div className={contentClass}>
+        <h3 className={headingClass}>{title}</h3>
+        <p className={descriptionClass}>{description}</p>
 
-        <a
-          className={styles.cta}
-          href={href}
-          target={external ? "_blank" : undefined}
-          rel={external ? "noopener noreferrer" : undefined}
-        >
-          <span className={styles.ctaLabel} data-text={ctaLabel}>
-            {ctaLabel}
-          </span>
-          <span className={styles.ctaArrow} aria-hidden="true">
-            {external ? "↗" : "→"}
-          </span>
-        </a>
+        {ctaLabel && href ? (
+          <a
+            className={styles.cta}
+            href={href}
+            target={external ? "_blank" : undefined}
+            rel={external ? "noopener noreferrer" : undefined}
+          >
+            <span className={styles.ctaLabel} data-text={ctaLabel}>
+              {ctaLabel}
+            </span>
+            <span className={styles.ctaArrow} aria-hidden="true">
+              {external ? "↗" : "→"}
+            </span>
+          </a>
+        ) : null}
       </div>
     </article>
   );

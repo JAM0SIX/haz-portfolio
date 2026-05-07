@@ -4,6 +4,11 @@
    diagram in the article's ink color, soft secondary in inkSoft.
    ───────────────────────────────────────────────────────────── */
 
+/** Round numeric SVG coords so SSR and the browser hydrate to the same strings. */
+function c(n: number): string {
+  return n.toFixed(4);
+}
+
 type InsigniaProps = {
   /** Numeric seed; the variant is `seed % 6`. */
   seed: number;
@@ -57,10 +62,10 @@ export default function Insignia({ seed, ink, inkSoft }: InsigniaProps) {
           return (
             <line
               key={i}
-              x1={x1}
-              y1={y1}
-              x2={x2}
-              y2={y2}
+              x1={c(x1)}
+              y1={c(y1)}
+              x2={c(x2)}
+              y2={c(y2)}
               stroke={stroke}
               strokeWidth="0.5"
             />
@@ -79,10 +84,10 @@ export default function Insignia({ seed, ink, inkSoft }: InsigniaProps) {
         {Array.from({ length: 17 }).map((_, i) => (
           <line
             key={i}
-            x1={14 + i * 4.5}
+            x1={c(14 + i * 4.5)}
             y1="46"
-            x2={14 + i * 4.5}
-            y2={i % 4 === 0 ? 40 : 44}
+            x2={c(14 + i * 4.5)}
+            y2={i % 4 === 0 ? "40" : "44"}
             stroke={stroke}
             strokeWidth="0.5"
           />

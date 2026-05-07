@@ -9,8 +9,7 @@
 
    Interactions (only when the section is at least 50% in view):
      ↑ ↓ ← →     rotate through projects (clamped at ends)
-     Enter / ⎵   open active project
-     Esc         close detail panel
+     Enter / ⎵   go to project detail page
      click ▲ ▼   step prev / next via the indicator-flanking arrows
      touch swipe rotate through projects (mobile only)
    ───────────────────────────────────────────────────────────── */
@@ -23,6 +22,7 @@ import {
   type ReactNode,
 } from "react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { AnimatePresence, motion } from "motion/react";
 import Button from "@/components/ui/Button";
 import { PROJECTS, type Project } from "./projects";
@@ -411,6 +411,7 @@ function HeadingItem({
             display: "flex",
             alignItems: "center",
             gap: 10,
+            paddingLeft: 22,
             font: '500 10px/1 var(--font-sans)',
             letterSpacing: ".22em",
             color: isActive ? accent : "var(--ink-62)",
@@ -525,42 +526,6 @@ function HeadingItem({
               ))}
             </div>
 
-            <div style={{ display: "flex", gap: 22 }}>
-            {project.metrics.map(([k, v, u]) => (
-              <div
-                key={k}
-                style={{ display: "flex", flexDirection: "column", gap: 4 }}
-              >
-                <span
-                  style={{
-                    font: '500 10px/1 var(--font-sans)',
-                    letterSpacing: ".18em",
-                    color: "var(--ink-62)",
-                    textTransform: "uppercase",
-                  }}
-                >
-                  {k}
-                </span>
-                <span
-                  style={{
-                    font: '600 18px/1 var(--font-sans)',
-                    letterSpacing: ".02em",
-                    color: "var(--ink)",
-                    fontVariantNumeric: "tabular-nums",
-                  }}
-                >
-                  {v}
-                  {u && (
-                    <span
-                      style={{ fontSize: 10, opacity: 0.55, marginLeft: 3 }}
-                    >
-                      {u}
-                    </span>
-                  )}
-                </span>
-              </div>
-            ))}
-            </div>
           </div>
           <div
             style={{
@@ -748,223 +713,6 @@ function HudFooter({
       >
         All Projects
       </Button>
-    </div>
-  );
-}
-
-/* ─── Detail panel (modal) ─────────────────────────────────── */
-function Brackets() {
-  const s: CSSProperties = {
-    position: "absolute",
-    width: 14,
-    height: 14,
-    borderColor: "var(--ink-42)",
-    borderStyle: "solid",
-  };
-  return (
-    <>
-      <span style={{ ...s, top: -1, left: -1, borderWidth: "1px 0 0 1px" }} />
-      <span style={{ ...s, top: -1, right: -1, borderWidth: "1px 1px 0 0" }} />
-      <span
-        style={{ ...s, bottom: -1, left: -1, borderWidth: "0 0 1px 1px" }}
-      />
-      <span
-        style={{ ...s, bottom: -1, right: -1, borderWidth: "0 1px 1px 0" }}
-      />
-    </>
-  );
-}
-
-function DetailPanel({
-  project,
-  accent,
-  onClose,
-}: {
-  project: Project;
-  accent: string;
-  onClose: () => void;
-}) {
-  return (
-    <div
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 100,
-        background: "rgba(245, 243, 238, 0.92)",
-        backdropFilter: "blur(2px)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        animation: "fadeIn .25s ease",
-        pointerEvents: "auto",
-      }}
-      onClick={onClose}
-    >
-      <div
-        onClick={(e) => e.stopPropagation()}
-        style={{
-          position: "relative",
-          width: "min(900px, 86vw)",
-          background: "var(--paper)",
-          border: "1px solid var(--ink-22)",
-          padding: "38px 44px 30px",
-          fontFamily: "var(--font-sans)",
-          color: "var(--ink)",
-          animation: "slideUp .3s cubic-bezier(.2,.7,.2,1)",
-        }}
-      >
-        <Brackets />
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "baseline",
-            fontSize: 10,
-            letterSpacing: ".18em",
-            color: "var(--ink-62)",
-            textTransform: "uppercase",
-          }}
-        >
-          <span>PROJECT FILE · {project.id.toUpperCase()}</span>
-          <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span
-              style={{
-                width: 6,
-                height: 6,
-                background: accent,
-                borderRadius: "50%",
-              }}
-            />
-            STATUS · ACTIVE
-          </span>
-        </div>
-
-        <div
-          style={{
-            marginTop: 22,
-            fontSize: 44,
-            fontWeight: 600,
-            letterSpacing: ".04em",
-            lineHeight: 1,
-            fontFamily: "var(--font-sans)",
-          }}
-        >
-          {project.title}
-        </div>
-        <div
-          style={{
-            marginTop: 10,
-            fontSize: 12,
-            letterSpacing: ".16em",
-            color: "var(--ink-62)",
-            textTransform: "uppercase",
-          }}
-        >
-          {project.role} · {project.year} · {project.tags.join(" / ")}
-        </div>
-
-        <div
-          style={{
-            marginTop: 28,
-            display: "grid",
-            gridTemplateColumns: "1.4fr 1fr",
-            gap: 36,
-          }}
-        >
-          <div
-            style={{
-              fontSize: 14,
-              lineHeight: 1.6,
-              color: "var(--ink-82)",
-            }}
-          >
-            <div
-              style={{
-                fontSize: 10,
-                letterSpacing: ".22em",
-                color: "var(--ink-42)",
-                textTransform: "uppercase",
-                marginBottom: 10,
-              }}
-            >
-              BRIEF / 001
-            </div>
-            {project.summary}
-            <div
-              style={{
-                marginTop: 22,
-                display: "flex",
-                gap: 14,
-                alignItems: "center",
-              }}
-            >
-              <Button variant="secondary" arrow="↗">
-                Open Case
-              </Button>
-              <Button variant="tertiary" onClick={onClose}>
-                Back · Esc
-              </Button>
-            </div>
-          </div>
-          <div>
-            <div
-              style={{
-                fontSize: 10,
-                letterSpacing: ".22em",
-                color: "var(--ink-42)",
-                textTransform: "uppercase",
-                marginBottom: 10,
-              }}
-            >
-              READOUT / 002
-            </div>
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 14,
-              }}
-            >
-              {project.metrics.map(([k, v, u]) => (
-                <div
-                  key={k}
-                  style={{
-                    display: "flex",
-                    alignItems: "baseline",
-                    justifyContent: "space-between",
-                    borderBottom: "1px dashed var(--ink-22)",
-                    paddingBottom: 8,
-                  }}
-                >
-                  <span
-                    style={{
-                      fontSize: 10,
-                      letterSpacing: ".16em",
-                      color: "var(--ink-62)",
-                    }}
-                  >
-                    {k}
-                  </span>
-                  <span
-                    style={{
-                      fontSize: 22,
-                      fontVariantNumeric: "tabular-nums",
-                      letterSpacing: ".02em",
-                    }}
-                  >
-                    {v}
-                    <span
-                      style={{ fontSize: 11, opacity: 0.6, marginLeft: 4 }}
-                    >
-                      {u}
-                    </span>
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
     </div>
   );
 }
@@ -1159,54 +907,6 @@ function MobileActiveCard({
           ))}
         </div>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 14,
-          }}
-        >
-          {project.metrics.map(([k, v, u]) => (
-            <div
-              key={k}
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 4,
-                minWidth: 0,
-              }}
-            >
-              <span
-                style={{
-                  font: '500 10px/1 var(--font-sans)',
-                  letterSpacing: ".18em",
-                  color: "var(--ink-62)",
-                  textTransform: "uppercase",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                  whiteSpace: "nowrap",
-                }}
-              >
-                {k}
-              </span>
-              <span
-                style={{
-                  font: '600 16px/1 var(--font-sans)',
-                  letterSpacing: ".02em",
-                  color: "var(--ink)",
-                  fontVariantNumeric: "tabular-nums",
-                }}
-              >
-                {v}
-                {u && (
-                  <span style={{ fontSize: 10, opacity: 0.55, marginLeft: 3 }}>
-                    {u}
-                  </span>
-                )}
-              </span>
-            </div>
-          ))}
-        </div>
       </div>
 
       <div
@@ -1240,9 +940,10 @@ const SAFE_MARGIN = 20;
 
 export default function PortfolioDial() {
   const [activeIdx, setActiveIdx] = useState(0);
-  const [open, setOpen] = useState<string | null>(null);
   const n = PROJECTS.length;
   const accent = ACCENT;
+
+  const router = useRouter();
 
   // Track which way the user moved most recently — drives mobile card slide.
   const [direction, setDirection] = useState(0);
@@ -1292,12 +993,8 @@ export default function PortfolioDial() {
   // Keyboard navigation — only when in view (so arrow keys scroll the page
   // when the dial is off-screen).
   useEffect(() => {
-    if (!inView && !open) return;
+    if (!inView) return;
     const onKey = (e: KeyboardEvent) => {
-      if (open) {
-        if (e.key === "Escape") setOpen(null);
-        return;
-      }
       if (e.key === "ArrowDown" || e.key === "ArrowRight") {
         e.preventDefault();
         setActiveIdx((i) => Math.min(i + 1, n - 1));
@@ -1306,12 +1003,12 @@ export default function PortfolioDial() {
         setActiveIdx((i) => Math.max(i - 1, 0));
       } else if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        setOpen(PROJECTS[activeIdx].id);
+        router.push(`/projects/${PROJECTS[activeIdx].id}`);
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [inView, activeIdx, n, open]);
+  }, [inView, activeIdx, n, router]);
 
   const isMobile = vp.w > 0 && vp.w <= 720;
   const dialShift = isMobile ? 0 : ACTIVE_PANEL_W * 0.6;
@@ -1341,7 +1038,6 @@ export default function PortfolioDial() {
     null,
   );
   const onTouchStart = (e: React.TouchEvent) => {
-    if (open) return;
     const t = e.touches[0];
     touchRef.current = { x: t.clientX, y: t.clientY, fired: false };
   };
@@ -1434,7 +1130,7 @@ export default function PortfolioDial() {
                   idx={activeIdx}
                   accent={accent}
                   direction={direction}
-                  onOpen={(id) => setOpen(id)}
+                  onOpen={(id) => router.push(`/projects/${id}`)}
                 />
               </div>
             </div>
@@ -1465,7 +1161,7 @@ export default function PortfolioDial() {
                 arcSpread={CONFIG.arcSpread}
                 accent={accent}
                 onSelect={setActiveIdx}
-                onOpen={(id) => setOpen(id)}
+                onOpen={(id) => router.push(`/projects/${id}`)}
               />
 
               <NavArrows
@@ -1484,21 +1180,13 @@ export default function PortfolioDial() {
               activeIdx={activeIdx}
               n={n}
               onAllProjects={() => {
-                // TODO: navigate to all-projects view when /projects route exists
-                console.log("All Projects clicked");
+                router.push("/projects");
               }}
             />
           )}
         </>
       )}
 
-      {open && (
-        <DetailPanel
-          project={PROJECTS.find((p) => p.id === open) ?? PROJECTS[0]}
-          accent={accent}
-          onClose={() => setOpen(null)}
-        />
-      )}
     </div>
   );
 }
