@@ -32,7 +32,7 @@
   grid-template-columns: 560px 300px;
   gap: var(--space-7);
   justify-content: center;
-  align-items: start;
+  align-items: center;
 }
 
 .diagram {
@@ -45,17 +45,6 @@
   background: unset;
   min-height: 560px;
   overflow: visible;
-}
-
-.tag {
-  position: absolute;
-  top: var(--space-4);
-  right: var(--space-4);
-  z-index: 2;
-  font-size: var(--text-2xs);
-  letter-spacing: var(--track-caps-wide);
-  text-transform: uppercase;
-  color: var(--ink-62);
 }
 
 .diagramSvg {
@@ -191,8 +180,8 @@
 }
 
 .panel {
-  background-color: rgba(245, 243, 237, 1);
   background: unset;
+  background-color: rgba(245, 243, 237, 1);
   border-width: 0px 0px 0px 0px;
   border-color: rgba(0, 0, 0, 0);
   border-style: none none none none;

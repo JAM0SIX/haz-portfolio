@@ -188,10 +188,6 @@ export default function Methodology() {
             role="group"
             aria-label="Process diagram, 5 stages around a circle"
           >
-            <span className={styles.tag}>
-              Stage <strong>{String(activeIdx + 1).padStart(2, "0")}</strong> / 0{N}
-            </span>
-
             <svg className={styles.diagramSvg} viewBox={`0 0 ${VIEWBOX} ${VIEWBOX}`} aria-hidden="true">
               <circle cx={CX} cy={CY} r={220} className={styles.dotsBackdrop} />
               <g ref={dotsGroupRef} className={styles.dotsGroup}>
