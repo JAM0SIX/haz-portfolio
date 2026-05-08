@@ -452,7 +452,7 @@ function HeadingItem({
             font: '500 10px/1.3 var(--font-sans)',
             letterSpacing: ".16em",
             color: "var(--ink-62)",
-            textTransform: "uppercase",
+            textTransform: "none",
           }}
         >
           {project.year}, {project.role}
@@ -507,7 +507,7 @@ function HeadingItem({
                     font: '500 10px/1 var(--font-sans)',
                     letterSpacing: ".18em",
                     color: "var(--ink-62)",
-                    textTransform: "uppercase",
+                    textTransform: "none",
                     whiteSpace: "nowrap",
                   }}
                 >

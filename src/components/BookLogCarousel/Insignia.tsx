@@ -97,7 +97,7 @@ export default function Insignia({ seed, ink, inkSoft }: InsigniaProps) {
           x="50"
           y="62"
           fontSize="7"
-          fontFamily='"DM Sans", ui-sans-serif, system-ui, sans-serif'
+          fontFamily='"Sora", ui-sans-serif, system-ui, sans-serif'
           fontWeight="500"
           textAnchor="middle"
           fill={stroke}
@@ -117,7 +117,7 @@ export default function Insignia({ seed, ink, inkSoft }: InsigniaProps) {
           x="29"
           y="54"
           fontSize="8"
-          fontFamily='"DM Sans", ui-sans-serif, system-ui, sans-serif'
+          fontFamily='"Sora", ui-sans-serif, system-ui, sans-serif'
           fontWeight="500"
           fill={inv}
         >

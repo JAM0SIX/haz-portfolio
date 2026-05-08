@@ -170,7 +170,7 @@ export default function ProjectDetailTemplate({ project }: Props) {
           {reflectionItems.map((item) => (
             <article key={item.id} className={styles.reflectionCard}>
               <p className={styles.reflectionLabel}>{item.label}</p>
-              <h3 className={styles.reflectionTitle}>{item.title}</h3>
+              <h4 className={styles.reflectionTitle}>{item.title}</h4>
               <p className={styles.reflectionBody}>{item.body}</p>
             </article>
           ))}

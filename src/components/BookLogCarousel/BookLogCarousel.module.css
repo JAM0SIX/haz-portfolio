@@ -35,9 +35,9 @@
 
 .topbarTitle {
   margin: 0;
-  font-family: var(--font-serif);
+  font-family: var(--font-heading);
   font-size: 28px;
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-bold);
   letter-spacing: var(--track-tight);
   line-height: var(--leading-tight);
   color: var(--ink);
@@ -263,7 +263,7 @@
   font-size: var(--text-2xs);
   font-weight: var(--weight-medium);
   letter-spacing: var(--track-caps);
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 /* Stacked: "NO." sits on top of the big number, both centered. */
@@ -320,7 +320,7 @@
 }
 
 .coverTitle {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 18px;
   line-height: 1.15;
   letter-spacing: -0.005em;
@@ -424,7 +424,7 @@
   font-size: var(--text-2xs);
   font-weight: var(--weight-medium);
   letter-spacing: var(--track-caps);
-  text-transform: uppercase;
+  text-transform: none;
   font-variant-numeric: tabular-nums;
   transition: color 0.2s;
 }
@@ -492,7 +492,7 @@
 }
 
 .previewTitle {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: 30px;
   font-weight: var(--weight-medium);
   letter-spacing: var(--track-tight);
@@ -516,7 +516,7 @@
 }
 
 .rowExcerpt {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: var(--text-base);
   line-height: var(--leading-relaxed);
   text-wrap: pretty;

@@ -24,12 +24,14 @@
   --accent-soft: rgba(194, 65, 12, 0.18);
 
   /* ─── Typography ───
-     --font-sans / --font-serif fallbacks below.
+     --font-sans / --font-heading fallbacks below.
      next/font (see app/layout.tsx) overrides these on <html>
-     with self-hosted DM Sans + Spectral families. */
-  --font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
+     with self-hosted Sora + Apple Garamond families. */
+  --font-sans: "Sora", ui-sans-serif, system-ui, -apple-system, "Segoe UI",
     Helvetica, Arial, sans-serif;
-  --font-serif: "Spectral", "Source Serif Pro", Georgia, serif;
+  --font-heading: "Apple Garamond", "Garamond", "Times New Roman", serif;
+  /* Backward-compatible alias for older serif references. */
+  --font-serif: var(--font-sans);
 
   --text-2xs: 10px;
   --text-xs: 11px;

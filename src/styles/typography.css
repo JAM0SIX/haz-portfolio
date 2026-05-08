@@ -6,11 +6,16 @@
    ───────────────────────────────────────────────────────────── */
 
 .type-hero {
-  font-family: var(--font-serif);
+  font-family: var(--font-heading);
   font-size: var(--text-hero);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-bold);
   letter-spacing: var(--track-tight);
   line-height: var(--leading-tight);
+}
+
+h1 {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
 }
 
 .type-display {
@@ -30,11 +35,27 @@
 }
 
 .type-heading {
-  font-family: var(--font-sans);
+  font-family: var(--font-heading);
   font-size: var(--text-lg);
-  font-weight: var(--weight-medium);
+  font-weight: var(--weight-bold);
   letter-spacing: 0.02em; /* mid-step — no token, matches spec */
   line-height: var(--leading-snug);
+}
+
+h2 {
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
+  font-size: 36px !important;
+}
+
+h3 {
+  font-family: var(--font-sans);
+  font-size: 28px !important;
+}
+
+h4 {
+  font-family: var(--font-sans);
+  font-size: 20px !important;
 }
 
 .type-body {
@@ -59,7 +80,7 @@
   font-weight: var(--weight-medium);
   letter-spacing: var(--track-caps);
   line-height: var(--leading-tight);
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .type-technical {
@@ -68,11 +89,11 @@
   font-weight: var(--weight-medium);
   letter-spacing: var(--track-caps-wide);
   line-height: var(--leading-tight);
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .type-editorial {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-size: var(--text-base);
   font-weight: var(--weight-regular);
   letter-spacing: var(--track-normal);

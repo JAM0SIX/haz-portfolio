@@ -15,7 +15,7 @@ export type Project = {
 export const PROJECTS: readonly Project[] = [
   {
     id: "philpotpearce",
-    title: "PHILPOT—PEARCE",
+    title: "Philpot—Pearce",
     role: "Lead Designer & Consultant",
     year: "2026",
     tags: ["Identity", "Product", "Web"],

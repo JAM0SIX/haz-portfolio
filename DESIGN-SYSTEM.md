@@ -55,19 +55,14 @@ There is no separate "grey" palette. All greys are `ink` at five fixed opacities
 
 ### 1.2 Typography
 
-Two fonts. **DM Sans** does all the work. **Spectral** comes out only for hero headers and editorial emphasis — it should feel like a moment.
+Two fonts. **Sora** does all the work. **Apple Garamond** is reserved for H1 section headings and is always bold.
 
 ```css
---font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
---font-serif: "Spectral", "Source Serif Pro", Georgia, serif;
+--font-sans: "Sora", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+--font-heading: "Apple Garamond", "Garamond", "Times New Roman", serif;
 ```
 
-Load from Google Fonts:
-```html
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Spectral:ital,wght@0,400;0,500;0,600;1,400&display=swap" rel="stylesheet">
-```
+Load locally with `next/font/local` in `src/app/layout.tsx`.
 
 #### Type scale
 
@@ -83,7 +78,7 @@ A 9-step scale. No half-steps, no off-rhythm sizes. If a size isn't on this list
 | `--text-lg` | 20 | Card titles, section headings |
 | `--text-xl` | 28 | Page titles, active heading |
 | `--text-2xl` | 44 | Detail panel title |
-| `--text-hero` | 64 | Hero header (Spectral only) |
+| `--text-hero` | 64 | Hero header (H1 only) |
 
 #### Font weights
 
@@ -121,15 +116,15 @@ These are the named compositions you reach for. Match the recipe — don't recom
 
 | Role | Font | Size | Weight | Tracking | Transform |
 |---|---|---|---|---|---|
-| **Hero** | Spectral | 64 | 500 | -0.02em | none |
-| **Display** | DM Sans | 44 | 600 | -0.02em | none |
-| **Title** | DM Sans | 28 | 600 | 0.04em | none |
-| **Heading** | DM Sans | 20 | 500 | 0.02em | none |
-| **Body** | DM Sans | 14 | 400 | 0 | none |
-| **Caption** | DM Sans | 12 | 400 | 0 | none |
-| **Label / Caps** | DM Sans | 11 | 500 | 0.16em | UPPERCASE |
-| **Technical** | DM Sans | 10 | 500 | 0.22em | UPPERCASE |
-| **Editorial body** | Spectral | 14 | 400 | 0 | none |
+| **Hero (H1 only)** | Apple Garamond | 64 | 700 | -0.02em | none |
+| **Display** | Sora | 44 | 600 | -0.02em | none |
+| **Title** | Sora | 28 | 600 | 0.04em | none |
+| **Heading** | Sora | 20 | 500 | 0.02em | none |
+| **Body** | Sora | 14 | 400 | 0 | none |
+| **Caption** | Sora | 12 | 400 | 0 | none |
+| **Label / Caps** | Sora | 11 | 500 | 0.16em | UPPERCASE |
+| **Technical** | Sora | 10 | 500 | 0.22em | UPPERCASE |
+| **Editorial body** | Sora | 14 | 400 | 0 | none |
 
 ---
 
@@ -216,7 +211,7 @@ Every text button — primary, secondary, tertiary — has the **exact same dime
 | Display | `inline-flex`, `align-items: center`, `justify-content: center` |
 | Padding | `10px 16px` |
 | Gap (between content children) | `12px` |
-| Font | DM Sans, `11px`, weight `500` (rest) → `600` (hover), `0.16em` tracking, UPPERCASE, `line-height: 1` |
+| Font | Sora, `11px`, weight `500` (rest) → `600` (hover), `0.16em` tracking, UPPERCASE, `line-height: 1` |
 | Border | None (visual border drawn via two-layer fill technique — see below) |
 | Corner | Hard at rest, chamfered (8px) on hover |
 
@@ -609,8 +604,8 @@ Paste this block at the top of your stylesheet (or into a `:root` declaration).
   --accent-soft: rgba(194, 65, 12, 0.18);
 
   /* ─── Typography ─── */
-  --font-sans: "DM Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
-  --font-serif: "Spectral", "Source Serif Pro", Georgia, serif;
+  --font-sans: "Sora", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Helvetica, Arial, sans-serif;
+  --font-heading: "Apple Garamond", "Garamond", "Times New Roman", serif;
 
   --text-2xs: 10px;
   --text-xs: 11px;
@@ -695,7 +690,7 @@ A short list of what to update when refactoring the four existing files against 
 - Background `#f5f3ee` → `var(--paper)` ✓ (already correct)
 - Text `#1a1815` → `var(--ink)` (rename only)
 - Replace all `rgba(0,0,0,.X)` with the closest `--ink-XX` token
-- Swap `JetBrains Mono` for `var(--font-sans)` (DM Sans) globally
+- Swap `JetBrains Mono` for `var(--font-sans)` (Sora) globally
 - "View Project" CTA → repromote to `.btn-primary` (currently uses accent border = tertiary; this CTA is the primary action of the active card)
 - "Open Case · ↗" → `.btn-secondary` (already correct pattern, just retoken)
 - "Back · Esc" → `.btn-icon` style
@@ -709,21 +704,21 @@ A short list of what to update when refactoring the four existing files against 
 - `--accent: #1A1916` → `--accent: #C2410C` (currently mis-named — accent was just ink)
 - `.cta` "Open Article" → `.btn-secondary` (it's an ink fill, not accent)
 - `.navbtn` → `.btn-icon`
-- Swap `JetBrains Mono` for DM Sans
-- Keep Spectral for `.cover-title` and `.preview-title` (these are editorial emphasis — correct usage)
+- Swap `JetBrains Mono` for Sora
+- Use Sora for `.cover-title` and `.preview-title` (Spectral is no longer used)
 - Add chamfer hover to `.cta`, `.navbtn`, `.card`
 
 **Subtle Hover.html**
 - Background `#ffffff` → `var(--paper)` (this is the only file using pure white)
-- Update label font from system sans to DM Sans
-- The "Hello" reveal text — change from Inter 700 to **Spectral 500** (this is exactly the hero-emphasis case)
+- Update label font from system sans to Sora
+- The "Hello" reveal text — change from Inter 700 to **Apple Garamond 700** when it is an H1 heading
 
 **Menu.tsx**
 - `panelColor` default `#0F0F10` → `#1A1815` (var(--ink-panel))
 - `contrastColor` default `#F4F6F6` → `#F5F3EE` (var(--paper))
 - `accentColor` default `#FFFFFF` → `#C2410C` (var(--accent)) — finally gives the menu a real accent
 - `mutedColor` default `#6B6B70` → match `--ink-42` brightness on dark (`rgba(245,243,238,0.42)` for paper-on-ink-panel context)
-- `fontFamily` default `Inter, system-ui` → `DM Sans, ui-sans-serif, system-ui`
+- `fontFamily` default `Inter, system-ui` → `Sora, ui-sans-serif, system-ui`
 - Border radii `14px` (icon) and `22px` (panel) → **0 for both** (system is hard-cornered)
 - Add chamfer hover to the panel border on icon hover (replaces the soft radius signature)
 
@@ -733,7 +728,7 @@ A short list of what to update when refactoring the four existing files against 
 
 - **Don't** introduce a new color. Every grey is `--ink-XX`. Every tint of paper is one of the three surfaces.
 - **Don't** mix accent into secondary buttons or vice-versa. The three button tiers are non-negotiable.
-- **Don't** use Spectral for body or labels. It's hero/editorial only.
+- **Don't** use Apple Garamond outside H1 section headings.
 - **Don't** use border-radius. The chamfer is the only corner treatment.
 - **Don't** invent a font size between scale steps. Use the closest one.
 - **Don't** use pure white (`#FFFFFF`) or pure black (`#000000`). Always paper and ink.

@@ -31,7 +31,7 @@
   font-weight: var(--weight-medium);
   letter-spacing: var(--track-caps);
   line-height: var(--leading-tight);
-  text-transform: uppercase;
+  text-transform: none;
   cursor: pointer;
   border: none;
   background: transparent; /* set per tier */

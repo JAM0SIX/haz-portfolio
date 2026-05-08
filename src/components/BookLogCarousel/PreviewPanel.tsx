@@ -35,7 +35,7 @@ export default function PreviewPanel({ article }: PreviewPanelProps) {
               console.log(`Open article ${article.id}`);
             }}
           >
-            OPEN ARTICLE
+            Open Article
           </Button>
         </div>
       </div>

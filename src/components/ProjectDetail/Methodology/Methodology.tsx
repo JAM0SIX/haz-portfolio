@@ -281,7 +281,7 @@ export default function Methodology() {
               <span className={styles.panelReadoutDot} aria-hidden="true" />
               <span>{active.readout}</span>
             </div>
-            <h3 className={styles.panelTitle}>{active.title}</h3>
+            <h4 className={styles.panelTitle}>{active.title}</h4>
             <p className={styles.panelBody}>{active.body}</p>
             <div className={styles.panelMeta}>
               <span className={styles.panelMetaLabel}>{active.metaLabel}</span>

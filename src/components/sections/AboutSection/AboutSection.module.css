@@ -46,7 +46,7 @@
   font-size: var(--text-2xs);
   font-weight: var(--weight-medium);
   letter-spacing: var(--track-caps-wide);
-  text-transform: uppercase;
+  text-transform: none;
   color: rgba(255, 255, 255, 0.85);
   background: rgba(0, 0, 0, 0.4);
   padding: var(--space-1) var(--space-2);
@@ -83,7 +83,7 @@
 .traitHeading {
   margin: 0 0 var(--space-4);
   font-family: var(--font-sans);
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   font-weight: var(--weight-semibold);
   line-height: var(--leading-tight);
   letter-spacing: var(--track-tight);
@@ -100,7 +100,7 @@
 }
 
 .traitBody em {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-style: italic;
   font-weight: var(--weight-medium);
   font-size: 1.05em;
@@ -116,7 +116,7 @@
 .fieldsHeading {
   margin: 0 0 var(--space-4);
   font-family: var(--font-sans);
-  font-size: var(--text-xl);
+  font-size: var(--text-lg);
   font-weight: var(--weight-semibold);
   line-height: var(--leading-tight);
   letter-spacing: var(--track-tight);

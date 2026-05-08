@@ -40,8 +40,8 @@
 }
 
 .wordmark {
-  font-family: var(--font-serif);
-  font-weight: 500;
+  font-family: var(--font-heading);
+  font-weight: var(--weight-bold);
   font-size: clamp(180px, 22vw, 320px);
   line-height: 0.85;
   letter-spacing: var(--track-tight);
@@ -60,7 +60,7 @@
 }
 
 .tagline em {
-  font-family: var(--font-serif);
+  font-family: var(--font-sans);
   font-style: italic;
   font-weight: 500;
 }
@@ -115,7 +115,7 @@
   font-size: var(--text-2xs);
   font-weight: 500;
   letter-spacing: var(--track-caps-wide);
-  text-transform: uppercase;
+  text-transform: none;
   color: rgba(245, 243, 238, 0.42);
 }
 

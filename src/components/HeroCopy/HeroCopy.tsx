@@ -21,14 +21,8 @@
  * Setup:
  *   1. Drop your portrait at /public/images/harry.jpg (or change `portraitSrc`
  *      below). While missing, a burnt-orange placeholder shows on hover.
- *   2. Load DM Sans + Spectral fonts in your root layout:
- *        import { DM_Sans, Spectral } from "next/font/google";
- *        const dmSans = DM_Sans({ subsets: ["latin"], weight: ["400","500","600","700"], variable: "--font-dm-sans" });
- *        const spectral = Spectral({ subsets: ["latin"], weight: ["400","500"], style: ["normal","italic"], variable: "--font-spectral" });
- *        // <html className={`${dmSans.variable} ${spectral.variable}`}>
- *      Then in your global CSS map them to --font-sans / --font-serif:
- *        :root { --font-sans: var(--font-dm-sans), system-ui, sans-serif;
- *                --font-serif: var(--font-spectral), Georgia, serif; }
+ *   2. Load local Sora + Apple Garamond in your root layout with
+ *      next/font/local and map them to --font-sans / --font-heading.
  *
  * Theming:
  *   Override any CSS variable in `--hc-*` to retheme without editing this file.
@@ -409,8 +403,8 @@ export default function HeroCopy() {
           --hc-ink-62: rgba(26, 24, 21, 0.62);
           --hc-ink-82: rgba(26, 24, 21, 0.82);
           --hc-accent: #c2410c;
-          --hc-font-sans: var(--font-sans, "DM Sans", system-ui, sans-serif);
-          --hc-font-serif: var(--font-serif, "Spectral", Georgia, serif);
+          --hc-font-sans: var(--font-sans, "Sora", system-ui, sans-serif);
+          --hc-font-serif: var(--font-heading, "Apple Garamond", "Garamond", serif);
           --hc-chamfer: 8px;
           --hc-ease: cubic-bezier(0.32, 0.72, 0.32, 1);
           --hc-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
@@ -674,7 +668,7 @@ export default function HeroCopy() {
           font-size: 11px;
           font-weight: 500;
           letter-spacing: 0.16em;
-          text-transform: uppercase;
+          text-transform: none;
           text-align: center;
           line-height: 1.3;
         }

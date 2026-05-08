@@ -361,7 +361,7 @@
 .metricDescription {
   font-size: var(--text-xs);
   letter-spacing: var(--track-caps);
-  text-transform: uppercase;
+  text-transform: none;
 }
 
 .card:hover .description,
@@ -385,7 +385,7 @@
   font-weight: var(--weight-medium);
   letter-spacing: var(--track-caps);
   line-height: var(--leading-tight);
-  text-transform: uppercase;
+  text-transform: none;
   color: var(--accent);
   text-decoration: none;
   background: transparent;

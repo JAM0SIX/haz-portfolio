@@ -83,20 +83,20 @@ export default function AboutSection({
         <div className={styles.heroSide}>
           <p className={styles.filemeta}>{caption}</p>
           <Button variant="secondary" arrow="→" onClick={onAboutMeClick}>
-            ABOUT ME
+            About Me
           </Button>
         </div>
 
         {TRAITS.map((t) => (
           <div key={t.title} className={styles.trait}>
-            <h3 className={styles.traitHeading}>{t.title}</h3>
+            <h4 className={styles.traitHeading}>{t.title}</h4>
             <hr className={styles.rule} />
             <p className={styles.traitBody}>{t.body}</p>
           </div>
         ))}
 
         <div className={styles.fields}>
-          <h3 className={styles.fieldsHeading}>Fields of work</h3>
+          <h4 className={styles.fieldsHeading}>Fields of work</h4>
           <hr className={styles.rule} />
           <ul className={styles.fieldsList}>
             {FIELDS.map((f) => (
