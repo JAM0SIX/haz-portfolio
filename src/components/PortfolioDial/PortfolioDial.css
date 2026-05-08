@@ -23,12 +23,6 @@
   }
 }
 
-/* Crosshair cursor scoped to the dial only — no site-wide override. */
-.dial-stage,
-.dial-stage * {
-  cursor: crosshair;
-}
-
 @keyframes fadeIn {
   from {
     opacity: 0;

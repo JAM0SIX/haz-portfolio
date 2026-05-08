@@ -163,7 +163,7 @@
 .galleryGrid {
   display: grid;
   grid-template-columns: repeat(6, minmax(0, 1fr));
-  grid-template-rows: repeat(8, minmax(140px, auto));
+  grid-template-rows: repeat(10, minmax(140px, auto));
   gap: var(--space-5);
 }
 
@@ -234,6 +234,11 @@
   grid-row: 7 / span 2;
 }
 
+.galleryItemWideBottom {
+  grid-column: 1 / span 6;
+  grid-row: 9 / span 2;
+}
+
 .galleryMedia {
   position: relative;
   min-height: 200px;
@@ -266,7 +271,8 @@
   min-height: 0;
 }
 
-.galleryItemWide .galleryMedia {
+.galleryItemWide .galleryMedia,
+.galleryItemWideBottom .galleryMedia {
   aspect-ratio: 16 / 9;
   min-height: 0;
 }
@@ -391,6 +397,7 @@
   }
 
   .galleryItemWide,
+  .galleryItemWideBottom,
   .galleryItemLeftMid,
   .galleryItemRightMid,
   .galleryItemLeftBottom,
@@ -432,6 +439,7 @@
   .galleryItemSmallTop,
   .galleryItemSmallBottom,
   .galleryItemWide,
+  .galleryItemWideBottom,
   .galleryItemLeftMid,
   .galleryItemRightMid,
   .galleryItemLeftBottom,

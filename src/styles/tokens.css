@@ -95,6 +95,26 @@
 *::before,
 *::after {
   box-sizing: border-box;
+  cursor: crosshair;
+}
+
+/* Use standard clickable cursor for interactive controls */
+a[href],
+button,
+[role="button"],
+summary,
+label[for],
+select,
+input[type="button"],
+input[type="submit"],
+input[type="reset"],
+input[type="checkbox"],
+input[type="radio"] {
+  cursor: pointer;
+}
+
+.isClickable {
+  cursor: pointer;
 }
 
 html {

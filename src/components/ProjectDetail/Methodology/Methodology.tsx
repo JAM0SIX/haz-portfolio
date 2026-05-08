@@ -21,6 +21,10 @@ const SEG_COUNT = 2;
 const INK_LIGHT = 0.22;
 const INK_DARK = 0.82;
 
+function r3(n: number): number {
+  return Math.round(n * 1000) / 1000;
+}
+
 function shortestAngle(delta: number): number {
   return Math.atan2(Math.sin(delta), Math.cos(delta));
 }
@@ -70,21 +74,23 @@ type StageLayout = Stage & {
   x: number;
   y: number;
   align: keyof typeof ALIGN_CLASS;
-  labelX: number;
-  labelY: number;
+  labelLeft: string;
+  labelTop: string;
 };
 
 const STAGE_LAYOUTS: ReadonlyArray<StageLayout> = STAGES.map((s, i) => {
   const angle = -Math.PI / 2 + (i * 2 * Math.PI) / STAGES.length;
+  const labelX = CX + Math.cos(angle) * (NODE_R + LABEL_OFFSET);
+  const labelY = CY + Math.sin(angle) * (NODE_R + LABEL_OFFSET);
   return {
     ...s,
     idx: i,
     angle,
-    x: CX + Math.cos(angle) * NODE_R,
-    y: CY + Math.sin(angle) * NODE_R,
+    x: r3(CX + Math.cos(angle) * NODE_R),
+    y: r3(CY + Math.sin(angle) * NODE_R),
     align: labelAlign(angle),
-    labelX: CX + Math.cos(angle) * (NODE_R + LABEL_OFFSET),
-    labelY: CY + Math.sin(angle) * (NODE_R + LABEL_OFFSET),
+    labelLeft: `${r3((labelX / VIEWBOX) * 100)}%`,
+    labelTop: `${r3((labelY / VIEWBOX) * 100)}%`,
   };
 });
 
@@ -102,13 +108,16 @@ const DOTS: ReadonlyArray<Dot> = DOT_RINGS.flatMap(([radius, count]) => {
   for (let i = 0; i < count; i++) {
     const a = (i / count) * 2 * Math.PI;
     out.push({
-      x: CX + Math.cos(a) * radius,
-      y: CY + Math.sin(a) * radius,
+      x: r3(CX + Math.cos(a) * radius),
+      y: r3(CY + Math.sin(a) * radius),
       fill: dotFill(a, PEAK, BAND_HALF),
     });
   }
   return out;
 });
+
+const ARC_SPAN_R = r3(ARC_SPAN);
+const ARC_GAP_R = r3(CIRC - ARC_SPAN);
 
 export default function Methodology() {
   const [activeIdx, setActiveIdx] = useState(0);
@@ -138,7 +147,7 @@ export default function Methodology() {
       dots.setAttribute("transform", `rotate(${(step * 360) / N} ${CX} ${CY})`);
     }
     if (arc) {
-      arc.setAttribute("stroke-dashoffset", String(-step * SEG));
+      arc.setAttribute("stroke-dashoffset", String(r3(-step * SEG)));
     }
   }, [activeIdx]);
 
@@ -205,7 +214,7 @@ export default function Methodology() {
                 cy={CY}
                 r={NODE_R}
                 className={styles.arcActive}
-                strokeDasharray={`${ARC_SPAN} ${CIRC - ARC_SPAN}`}
+                strokeDasharray={`${ARC_SPAN_R} ${ARC_GAP_R}`}
                 strokeDashoffset={0}
                 transform={`rotate(${arcRotation} ${CX} ${CY})`}
               />
@@ -237,8 +246,8 @@ export default function Methodology() {
               {STAGE_LAYOUTS.map((s) => {
                 const isActive = s.idx === activeIdx;
                 const labelStyle: CSSProperties = {
-                  left: `${(s.labelX / VIEWBOX) * 100}%`,
-                  top: `${(s.labelY / VIEWBOX) * 100}%`,
+                  left: s.labelLeft,
+                  top: s.labelTop,
                 };
                 return (
                   <div

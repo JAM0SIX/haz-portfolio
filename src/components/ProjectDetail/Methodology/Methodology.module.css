@@ -194,7 +194,7 @@
     0 100%,
     0 var(--chamfer-size, 8px)
   );
-  padding: var(--space-5);
+  padding: 20px;
 }
 
 .panelReadout {

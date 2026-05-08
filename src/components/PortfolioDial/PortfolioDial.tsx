@@ -391,6 +391,7 @@ function HeadingItem({
       }}
     >
       <div
+        className="isClickable"
         onClick={() => {
           if (hidden) return;
           if (isActive) onOpen();

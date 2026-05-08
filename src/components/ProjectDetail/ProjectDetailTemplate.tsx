@@ -21,6 +21,7 @@ export default function ProjectDetailTemplate({ project }: Props) {
     { id: "fig-06", label: "FIG. 06", note: "Research synthesis snapshot from interview rounds.", shape: "rightMid" },
     { id: "fig-07", label: "FIG. 07", note: "Iteration set comparing spacing and hierarchy options.", shape: "leftBottom" },
     { id: "fig-08", label: "FIG. 08", note: "Final visual QA sweep before release handoff.", shape: "rightBottom" },
+    { id: "fig-09", label: "FIG. 09", note: "Closing flow board summarising the shipped experience.", shape: "wideBottom" },
   ] as const;
   const reflectionItems = [
     {
