@@ -3,7 +3,7 @@ import styles from "./Footer.module.css";
 
 const NAV_LINKS = [
   { label: "Work", href: "#work" },
-  { label: "About", href: "#about" },
+  { label: "About", href: "/about" },
   { label: "Read.cv", href: "https://read.cv/", external: true },
   { label: "LinkedIn", href: "https://www.linkedin.com/", external: true },
   { label: "Get in touch", href: "mailto:harryspawforth@gmail.com" },

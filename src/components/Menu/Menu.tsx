@@ -26,6 +26,7 @@
 import { useEffect, useRef, useState } from "react";
 import type { CSSProperties } from "react";
 import { AnimatePresence, motion } from "motion/react";
+import { usePathname } from "next/navigation";
 
 /* ─── Patterns ─────────────────────────────────────────────────
    Two 3×3 dot patterns the icon animates between.
@@ -47,7 +48,7 @@ const patternB = [
 
 const ICON_SIZE = 56;
 const PANEL_WIDTH = 320;
-const PANEL_HEIGHT = 520;
+const PANEL_HEIGHT = 430;
 
 /* ─── Timing (seconds) ────────────────────────────────────────
    Total open = X_DURATION + Y_DURATION + content fade. */
@@ -130,12 +131,10 @@ type MenuProps = {
 };
 
 const DEFAULT_PRIMARY: MenuItem[] = [
-  { label: "Index", link: "#top" },
-  { label: "Work", link: "#dial" },
-  { label: "Reading", link: "#reading" },
-  { label: "Capabilities", link: "#capabilities" },
-  { label: "About", link: "#about" },
-  { label: "Contact", link: "#contact" },
+  { label: "Home", link: "/" },
+  { label: "Work", link: "/projects" },
+  { label: "About", link: "/about" },
+  { label: "Contact", link: "/#contact" },
 ];
 
 const DEFAULT_RESOURCES: MenuItem[] = [
@@ -154,6 +153,7 @@ export default function Menu({
   const [open, setOpen] = useState(false);
   const [iconHover, setIconHover] = useState(false);
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
+  const pathname = usePathname();
 
   const shellRef = useRef<HTMLDivElement | null>(null);
 
@@ -198,6 +198,21 @@ export default function Menu({
 
   // Shell background: a subtle paper-chip when closed, ink-panel when open.
   const shellBg = open ? PANEL_COLOR : CLOSED_BG_COLOR;
+
+  const isPrimaryItemMuted = (link: string, idx: number): boolean => {
+    if (link.startsWith("/")) {
+      const [routePath] = link.split("#");
+      return pathname === routePath;
+    }
+
+    // Hash links are page-local. Keep Home muted on the landing page.
+    if (link === "#top") {
+      return pathname === "/" || pathname === "";
+    }
+
+    // Fallback to the previous behavior for unknown link patterns.
+    return idx === 0;
+  };
 
   const wrapperStyle: CSSProperties = {
     position: "fixed",
@@ -390,7 +405,7 @@ export default function Menu({
                       key={key}
                       label={item.label}
                       link={item.link}
-                      isMuted={idx === 0}
+                      isMuted={isPrimaryItemMuted(item.link, idx)}
                       size={28}
                       hovered={hoveredKey === key}
                       onHoverStart={() => setHoveredKey(key)}
@@ -401,55 +416,59 @@ export default function Menu({
                 })}
               </nav>
 
-              <div
-                style={{
-                  height: 1,
-                  background: MUTED_COLOR,
-                  opacity: 0.3,
-                  margin: "24px 0 18px",
-                }}
-              />
+              {resourceItems.length > 0 && (
+                <>
+                  <div
+                    style={{
+                      height: 1,
+                      background: MUTED_COLOR,
+                      opacity: 0.3,
+                      margin: "24px 0 18px",
+                    }}
+                  />
 
-              {/* Resources — design system "Technical" recipe label */}
-              <div
-                style={{
-                  fontSize: 10,
-                  letterSpacing: "0.22em",
-                  color: MUTED_COLOR,
-                  marginBottom: 14,
-                  fontWeight: 500,
-                  textTransform: "uppercase",
-                }}
-              >
-                RESOURCES
-              </div>
-              <nav
-                aria-label="Resources"
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: 2,
-                }}
-              >
-                {resourceItems.map((item, idx) => {
-                  const key = `resource-${idx}`;
-                  const external = /^https?:\/\//i.test(item.link);
-                  return (
-                    <MenuRow
-                      key={key}
-                      label={item.label}
-                      link={item.link}
-                      isMuted={false}
-                      size={18}
-                      hovered={hoveredKey === key}
-                      onHoverStart={() => setHoveredKey(key)}
-                      onHoverEnd={() => setHoveredKey(null)}
-                      onClick={close}
-                      external={external}
-                    />
-                  );
-                })}
-              </nav>
+                  {/* Resources — design system "Technical" recipe label */}
+                  <div
+                    style={{
+                      fontSize: 10,
+                      letterSpacing: "0.22em",
+                      color: MUTED_COLOR,
+                      marginBottom: 14,
+                      fontWeight: 500,
+                      textTransform: "uppercase",
+                    }}
+                  >
+                    RESOURCES
+                  </div>
+                  <nav
+                    aria-label="Resources"
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 2,
+                    }}
+                  >
+                    {resourceItems.map((item, idx) => {
+                      const key = `resource-${idx}`;
+                      const external = /^https?:\/\//i.test(item.link);
+                      return (
+                        <MenuRow
+                          key={key}
+                          label={item.label}
+                          link={item.link}
+                          isMuted={false}
+                          size={18}
+                          hovered={hoveredKey === key}
+                          onHoverStart={() => setHoveredKey(key)}
+                          onHoverEnd={() => setHoveredKey(null)}
+                          onClick={close}
+                          external={external}
+                        />
+                      );
+                    })}
+                  </nav>
+                </>
+              )}
             </motion.div>
           )}
         </AnimatePresence>

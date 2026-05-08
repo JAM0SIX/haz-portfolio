@@ -38,6 +38,7 @@ import {
   type ReactNode,
   type TouchEvent,
 } from "react";
+import "./HeroCopy.css";
 
 // ─────────────────────────────────────────────────────────────────────────
 // InkFillWord — pill word with radial ink fill on hover.
@@ -193,6 +194,10 @@ function AutoTypeSlot({
   }, [state.tick, state.phase, phrases, typeSpeed, holdDuration, eraseSpeed]);
 
   const text = reduce.current ? phrases[0] : state.text;
+  // Width-lock the pill to the longest phrase so it never reflows mid-cycle.
+  // Without this, each new phrase changes the chassis width and can push
+  // the trailing punctuation onto a new line.
+  const longest = phrases.reduce((a, b) => (a.length >= b.length ? a : b), "");
 
   return (
     <span
@@ -210,8 +215,15 @@ function AutoTypeSlot({
       <span className="hc-type__prompt" aria-hidden="true">
         ›
       </span>
-      <span className="hc-type__text">{text}</span>
-      <span className="hc-type__cursor" aria-hidden="true" />
+      <span className="hc-type__vp">
+        <span className="hc-type__ghost" aria-hidden="true">
+          {longest}
+        </span>
+        <span className="hc-type__overlay">
+          <span className="hc-type__text">{text}</span>
+          <span className="hc-type__cursor" aria-hidden="true" />
+        </span>
+      </span>
     </span>
   );
 }
@@ -290,6 +302,8 @@ function Signature({
 }) {
   const [revealed, setRevealed] = useState(false);
   const [portraitFailed, setPortraitFailed] = useState(false);
+  const signatureWidth = 80;
+  const signatureHeight = 120;
   const portraitWidth = 180;
   const portraitHeight = Math.round(portraitWidth * 1.25);
 
@@ -303,12 +317,17 @@ function Signature({
       onClick={() => setRevealed((r) => !r)}
       tabIndex={0}
       aria-label="Harry"
+      style={{ width: signatureWidth, height: signatureHeight }}
     >
       <svg
         className="hc-sig__svg"
         viewBox="0 0 1018 1552"
         xmlns="http://www.w3.org/2000/svg"
+        width={signatureWidth}
+        height={signatureHeight}
         style={{
+          width: signatureWidth,
+          height: signatureHeight,
           transform: `rotate(${tilt}deg)`,
         }}
         aria-hidden="true"
@@ -367,14 +386,14 @@ export default function HeroCopy() {
           <InkFillWord accent noCursor staggerIndex={1}>
             future
           </InkFillWord>{" "}
-          belongs to designers who build{" "}
-          <span className="hc-headline__type-line">
-            <AutoTypeSlot
-              phrases={["what's next", "agents", "systems", "taste"]}
-              staggerIndex={2}
-            />
-            .
-          </span>
+          belongs to
+          <br />
+          designers who build{" "}
+          <AutoTypeSlot
+            phrases={["what's next", "agents", "systems", "taste"]}
+            staggerIndex={2}
+          />
+          .
         </h1>
 
         <p className="hc-body">
@@ -391,308 +410,6 @@ export default function HeroCopy() {
           <Signature />
         </p>
       </div>
-
-      {/* All component styles live here so this file is self-contained.
-          Override any --hc-* CSS variable in a parent stylesheet to retheme. */}
-      <style jsx global>{`
-        .hc-root {
-          --hc-paper: #f5f3ee;
-          --hc-ink-panel: #1a1815;
-          --hc-ink: #1a1815;
-          --hc-ink-12: rgba(26, 24, 21, 0.12);
-          --hc-ink-62: rgba(26, 24, 21, 0.62);
-          --hc-ink-82: rgba(26, 24, 21, 0.82);
-          --hc-accent: #c2410c;
-          --hc-font-sans: var(--font-sans, "Sora", system-ui, sans-serif);
-          --hc-font-serif: var(--font-heading, "Apple Garamond", "Garamond", serif);
-          --hc-chamfer: 8px;
-          --hc-ease: cubic-bezier(0.32, 0.72, 0.32, 1);
-          --hc-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
-          --hc-dur: 250ms;
-
-          max-width: 760px;
-          margin: 0 auto;
-          padding: 64px 36px;
-          color: var(--hc-ink);
-          font-family: var(--hc-font-sans);
-        }
-
-        .hc-headline {
-          font-family: var(--hc-font-serif);
-          font-size: clamp(2.6rem, 6.5vw, 64px);
-          font-weight: 500;
-          letter-spacing: -0.02em;
-          line-height: 1.05;
-          margin: 0 0 28px;
-          color: var(--hc-ink);
-        }
-        .hc-headline__type-line {
-          display: block;
-          margin-top: 0.14em;
-        }
-        .hc-body {
-          font-family: var(--hc-font-sans);
-          font-size: 16px;
-          font-weight: 400;
-          line-height: 1.6;
-          color: var(--hc-ink-82);
-          margin: 0;
-          max-width: 38em;
-        }
-        .hc-signoff {
-          margin: 36px 0 0;
-          display: flex;
-          align-items: baseline;
-        }
-
-        .hc-fx-enter {
-          opacity: 0;
-          transform: translateY(4px);
-          transition:
-            opacity 500ms var(--hc-ease),
-            transform 500ms var(--hc-ease);
-        }
-        .hc-fx-enter.is-in {
-          opacity: 1;
-          transform: translateY(0);
-        }
-
-        /* InkFillWord */
-        .hc-ink {
-          --enter-x: 50%;
-          --enter-y: 50%;
-          --fill-radius: 0%;
-          --fill-color: var(--hc-ink);
-          position: relative;
-          display: inline-flex;
-          align-items: center;
-          padding: 4px 12px 2px;
-          line-height: 1em;
-          isolation: isolate;
-          background: var(--hc-ink-12);
-          color: inherit;
-          cursor: pointer;
-          border: none;
-          font-family: inherit;
-          clip-path: polygon(0 0, 100% 0, 100% 100%, 100% 100%, 0 100%, 0 0);
-          transition:
-            color var(--hc-dur) var(--hc-ease),
-            clip-path var(--hc-dur) var(--hc-ease),
-            opacity 500ms var(--hc-ease),
-            transform 500ms var(--hc-ease);
-        }
-        .hc-ink::before {
-          content: "";
-          position: absolute;
-          inset: 0;
-          z-index: -1;
-          background: var(--fill-color);
-          clip-path: circle(var(--fill-radius) at var(--enter-x) var(--enter-y));
-          pointer-events: none;
-          transition: clip-path var(--hc-dur) var(--hc-ease);
-        }
-        .hc-ink:hover,
-        .hc-ink.is-tapped {
-          color: var(--hc-paper);
-          clip-path: polygon(
-            var(--hc-chamfer) 0,
-            100% 0,
-            100% calc(100% - var(--hc-chamfer)),
-            calc(100% - var(--hc-chamfer)) 100%,
-            0 100%,
-            0 var(--hc-chamfer)
-          );
-        }
-        .hc-ink:hover::before,
-        .hc-ink.is-tapped::before {
-          --fill-radius: 150%;
-        }
-        .hc-ink--accent { --fill-color: var(--hc-accent); }
-        .hc-ink--no-cursor { cursor: text; }
-
-        /* AutoTypeSlot — dark chassis, orange chev, fits to current word */
-        .hc-type {
-          display: inline-flex;
-          align-items: center;
-          vertical-align: 0.06em;
-          padding: 0.18em 0.5em 0.14em;
-          background: var(--hc-ink-panel);
-          color: var(--hc-paper);
-          font-family: var(--hc-font-serif);
-          font-style: inherit;
-          font-weight: inherit;
-          font-size: 0.78em;
-          letter-spacing: -0.02em;
-          line-height: 1;
-          cursor: text;
-          user-select: none;
-          clip-path: polygon(0 0, 100% 0, 100% 100%, 100% 100%, 0 100%, 0 0);
-          transition: clip-path var(--hc-dur) var(--hc-ease);
-        }
-        .hc-type:hover {
-          clip-path: polygon(
-            var(--hc-chamfer) 0,
-            100% 0,
-            100% calc(100% - var(--hc-chamfer)),
-            calc(100% - var(--hc-chamfer)) 100%,
-            0 100%,
-            0 var(--hc-chamfer)
-          );
-        }
-        .hc-type__prompt {
-          color: var(--hc-accent);
-          font-family: var(--hc-font-sans);
-          font-weight: 500;
-          margin-right: 0.4em;
-          font-size: 0.92em;
-        }
-        .hc-type__text { display: inline-block; white-space: pre; }
-        .hc-type__cursor {
-          display: inline-block;
-          width: 2px;
-          height: 0.85em;
-          margin-left: 3px;
-          background: var(--hc-paper);
-          vertical-align: -0.05em;
-          animation: hc-blink 1.05s step-end infinite;
-        }
-        @keyframes hc-blink {
-          0%, 50% { opacity: 1; }
-          50.01%, 100% { opacity: 0; }
-        }
-
-        /* SlotWord — click cycles, width-locked */
-        .hc-slot {
-          display: inline-flex;
-          align-items: center;
-          vertical-align: 0.1em;
-          padding: 0.22em 0.55em 0.16em;
-          background: var(--hc-ink-panel);
-          color: var(--hc-paper);
-          cursor: pointer;
-          user-select: none;
-          overflow: hidden;
-          font-family: var(--hc-font-sans);
-          font-weight: 500;
-          font-size: 0.9em;
-          letter-spacing: 0;
-          line-height: 1;
-          clip-path: polygon(0 0, 100% 0, 100% 100%, 100% 100%, 0 100%, 0 0);
-          transition: clip-path var(--hc-dur) var(--hc-ease);
-        }
-        .hc-slot:hover {
-          clip-path: polygon(
-            var(--hc-chamfer) 0,
-            100% 0,
-            100% calc(100% - var(--hc-chamfer)),
-            calc(100% - var(--hc-chamfer)) 100%,
-            0 100%,
-            0 var(--hc-chamfer)
-          );
-        }
-        .hc-slot__vp {
-          position: relative;
-          display: inline-block;
-          height: 1em;
-          line-height: 1;
-          overflow: hidden;
-        }
-        .hc-slot__ghost {
-          display: block;
-          visibility: hidden;
-          height: 1em;
-          line-height: 1;
-          white-space: nowrap;
-          pointer-events: none;
-        }
-        .hc-slot__track {
-          position: absolute;
-          inset: 0;
-          display: block;
-          transition: transform 380ms var(--hc-ease);
-          will-change: transform;
-        }
-        .hc-slot__item {
-          display: block;
-          height: 1em;
-          line-height: 1;
-          white-space: nowrap;
-        }
-
-        /* Signature */
-        .hc-sig {
-          position: relative;
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-          width: 80px;
-          height: 120px;
-          cursor: pointer;
-          vertical-align: baseline;
-        }
-        .hc-sig__svg {
-          display: inline-block;
-          width: 100%;
-          height: fit-content;
-          max-height: 100%;
-          vertical-align: baseline;
-          color: var(--hc-ink);
-          user-select: none;
-        }
-        .hc-sig__bubble {
-          position: absolute;
-          left: 50%;
-          bottom: calc(100% + 12px);
-          transform: translateX(-50%);
-          transform-origin: 50% 100%;
-          pointer-events: none;
-          z-index: 10;
-        }
-        .hc-sig__portrait {
-          display: block;
-          width: 100%;
-          height: auto;
-          box-shadow: 0 8px 30px rgba(26, 24, 21, 0.18);
-          transform-origin: 50% 100%;
-          animation:
-            hc-portrait-intro 550ms var(--hc-ease-out) both,
-            hc-portrait-sway 3200ms ease-in-out 550ms infinite;
-        }
-        .hc-sig__placeholder {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: var(--hc-accent);
-          color: var(--hc-paper);
-          font-family: var(--hc-font-sans);
-          font-size: 11px;
-          font-weight: 500;
-          letter-spacing: 0.16em;
-          text-transform: none;
-          text-align: center;
-          line-height: 1.3;
-        }
-        @keyframes hc-portrait-intro {
-          0% { opacity: 0; transform: rotate(-6deg) scale(0.9); }
-          60% { opacity: 1; transform: rotate(3deg) scale(1.02); }
-          100% { opacity: 1; transform: rotate(0) scale(1); }
-        }
-        @keyframes hc-portrait-sway {
-          0%, 50%, 100% { transform: rotate(0); }
-          25% { transform: rotate(2.2deg); }
-          75% { transform: rotate(-2.2deg); }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .hc-fx-enter,
-          .hc-ink,
-          .hc-slot,
-          .hc-slot__track,
-          .hc-type { transition: none; }
-          .hc-type__cursor,
-          .hc-sig__portrait { animation: none; }
-        }
-      `}</style>
     </>
   );
 }

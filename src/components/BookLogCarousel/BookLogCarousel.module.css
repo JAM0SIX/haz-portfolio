@@ -6,12 +6,19 @@
 
 /* ============ ROOT ============ */
 .root {
+  /* Card geometry. All downstream layout (slide step in JS, focus-scale
+     margin, track top buffer, cover internals) is derived from these,
+     so changing the size lives in one place. The mobile breakpoint
+     below overrides them for narrow viewports. */
+  --card-w: 216px;
+  --card-h: 324px;
+
   position: relative;
   z-index: 1;
   display: grid;
   grid-template-rows: auto auto auto;
   min-height: 100vh;
-  padding: 60px var(--space-7);
+  padding: 80px var(--space-7);
   gap: var(--space-6);
   font-family: var(--font-sans);
   color: var(--ink);
@@ -71,9 +78,10 @@
 .trackWrap {
   position: relative;
   overflow: hidden;
-  /* Top padding absorbs the focused card's 1.15× upward growth
-     (~54px from a 360px-tall card scaled from bottom-left). */
-  padding: 64px 0 0;
+  /* Top padding absorbs the focused card's 1.15× upward growth.
+     The 0.18 multiplier over-buffers the 0.15× overflow so changes
+     to --card-h never clip the top of the focused card. */
+  padding: calc(var(--card-h) * 0.18) 0 0;
   margin-left: calc(-1 * var(--space-7));
   margin-right: calc(-1 * var(--space-7));
 }
@@ -95,8 +103,8 @@
 /* ============ CARD ============ */
 .card {
   flex: 0 0 auto;
-  width: 240px;
-  height: 360px;
+  width: var(--card-w);
+  height: var(--card-h);
   background: transparent;
   border: none;
   padding: 0;
@@ -116,16 +124,16 @@
   /* Scale up 1.15× from the bottom-left so the card grows up and to
      the right, keeping its left edge anchored to the chevron buttons
      above and its bottom edge anchored to the scalebar below.
-     The 1.15× scale extends the visual right edge by 36px (15% of
-     240px). To keep the visible gap to the next card a consistent
+     The 1.15× scale extends the visual right edge by 15% of the card
+     width. To keep the visible gap to the next card a consistent
      40px (matching every other pair), the focused card carries an
-     extra 36px right margin so the next card's layout slot starts
-     after the focused card's visual right edge. */
+     extra (--card-w * 0.15) right margin so the next card's layout
+     slot starts after the focused card's visual right edge. */
   transform: scale(1.15);
   transform-origin: bottom left;
   filter: saturate(1.15);
   z-index: 2;
-  margin-right: 36px;
+  margin-right: calc(var(--card-w) * 0.15);
 }
 
 .card:not(.cardFocus) {
@@ -157,10 +165,10 @@
 
 .coverPunches {
   position: absolute;
-  left: 8px;
+  left: 7px;
   top: 0;
   bottom: 0;
-  width: 14px;
+  width: 13px;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
@@ -170,8 +178,8 @@
 }
 
 .coverPunch {
-  width: 10px;
-  height: 10px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   background: var(--paper-deep);
   box-shadow:
@@ -183,7 +191,7 @@
 
 .coverSpine {
   position: absolute;
-  left: 24px;
+  left: 22px;
   top: 8px;
   bottom: 8px;
   width: 1px;
@@ -195,7 +203,7 @@
 .coverGrid {
   position: absolute;
   inset: 0;
-  background-size: 24px 24px;
+  background-size: 22px 22px;
   opacity: 0.25;
   pointer-events: none;
   z-index: 0;
@@ -203,8 +211,8 @@
 
 .coverCorner {
   position: absolute;
-  width: 12px;
-  height: 12px;
+  width: 11px;
+  height: 11px;
   z-index: 3;
 }
 
@@ -234,13 +242,13 @@
 .coverBand,
 .coverBignum,
 .coverTitleBlock {
-  padding-left: 32px;
-  padding-right: 32px;
+  padding-left: 28px;
+  padding-right: 28px;
 }
 
 .coverInsignia {
-  padding-left: 32px;
-  padding-right: 32px;
+  padding-left: 28px;
+  padding-right: 28px;
 }
 
 .coverBand {
@@ -250,12 +258,12 @@
   justify-content: center;
   align-items: center;
   gap: var(--space-7);
-  padding-top: 14px;
-  padding-bottom: 14px;
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 
 .coverBandTop {
-  padding-top: 18px;
+  padding-top: 16px;
 }
 
 .coverBandLabel {
@@ -275,9 +283,9 @@
   align-items: center;
   justify-content: center;
   gap: 4px;
-  padding-top: 8px;
+  padding-top: 7px;
   font-family: var(--font-sans);
-  font-size: 56px;
+  font-size: 50px;
   letter-spacing: -0.03em;
   font-weight: var(--weight-regular);
   line-height: var(--leading-tight);
@@ -285,7 +293,7 @@
 }
 
 .bignumPrefix {
-  font-size: 11px;
+  font-size: 10px;
   letter-spacing: 0.12em;
   line-height: var(--leading-tight);
 }
@@ -302,8 +310,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 14px;
-  padding-bottom: 14px;
+  padding-top: 12px;
+  padding-bottom: 12px;
 }
 
 .coverInsignia svg {
@@ -315,13 +323,13 @@
 .coverTitleBlock {
   position: relative;
   z-index: 2;
-  padding-bottom: 18px;
+  padding-bottom: 16px;
   text-align: center;
 }
 
 .coverTitle {
   font-family: var(--font-sans);
-  font-size: 18px;
+  font-size: 16px;
   line-height: 1.15;
   letter-spacing: -0.005em;
   margin: 0;
@@ -412,6 +420,13 @@
   position: absolute;
   bottom: 0;
   left: 0;
+  /* Neutralize the inherited .scalebarTick transform: the parent
+     .scalebarMajor button already applies translateX(-0.5px) to
+     center its 1px width on the X% position. Without this reset,
+     the inner tick gets shifted twice and lands ~0.5px to the left
+     of the marker (which only has one transform), producing a
+     visible 1px misalignment with the active-position indicator. */
+  transform: none;
 }
 
 .scalebarMajorLabel {
@@ -557,10 +572,15 @@
   }
 }
 
-/* Mobile: tighten further; shrink card to keep things in 100vh. */
+/* Mobile: tighten further; shrink card to keep things in 100vh.
+   Override the card-size custom properties here so all derived values
+   (.card box, .cardFocus margin, .trackWrap buffer, JS step constants)
+   reflow to mobile dimensions automatically. */
 @media (max-width: 720px) {
   .root {
-    padding: var(--space-4) var(--space-5);
+    --card-w: 198px;
+    --card-h: 288px;
+    padding: 64px var(--space-5);
     gap: var(--space-4);
   }
 
@@ -571,11 +591,6 @@
 
   .track {
     padding-left: var(--space-5);
-  }
-
-  .card {
-    width: 220px;
-    height: 320px;
   }
 
   .topbarTitle {

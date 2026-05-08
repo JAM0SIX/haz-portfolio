@@ -1,4 +1,7 @@
+"use client";
+
 import type { CSSProperties, ReactNode } from "react";
+import { useRouter } from "next/navigation";
 import Button from "@/components/ui/Button";
 import styles from "./AboutSection.module.css";
 
@@ -65,6 +68,7 @@ export default function AboutSection({
   ),
   onAboutMeClick,
 }: AboutSectionProps = {}) {
+  const router = useRouter();
   const portraitStyle: CSSProperties | undefined = portraitSrc
     ? { backgroundImage: `url(${portraitSrc})` }
     : undefined;
@@ -82,7 +86,17 @@ export default function AboutSection({
 
         <div className={styles.heroSide}>
           <p className={styles.filemeta}>{caption}</p>
-          <Button variant="secondary" arrow="→" onClick={onAboutMeClick}>
+          <Button
+            variant="secondary"
+            arrow="→"
+            onClick={() => {
+              if (onAboutMeClick) {
+                onAboutMeClick();
+                return;
+              }
+              router.push("/about");
+            }}
+          >
             About Me
           </Button>
         </div>

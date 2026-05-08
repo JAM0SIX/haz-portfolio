@@ -32,11 +32,12 @@ const PEEK_COUNT = 3;
 
 // Card width + visible gap. STEP must equal CARD_WIDTH + CARD_GAP so
 // translateX(-focus * STEP) brings the focused card's left edge to
-// the track padding. The mobile breakpoint shrinks the card to 220px,
-// so we recompute STEP from the viewport on resize.
+// the track padding. These mirror --card-w in
+// BookLogCarousel.module.css (216 desktop, 198 mobile); update both
+// places together if you ever resize the cards.
 const CARD_GAP = 40;
-const CARD_WIDTH_DESKTOP = 240;
-const CARD_WIDTH_MOBILE = 220;
+const CARD_WIDTH_DESKTOP = 216;
+const CARD_WIDTH_MOBILE = 198;
 const STEP_DESKTOP = CARD_WIDTH_DESKTOP + CARD_GAP;
 const STEP_MOBILE = CARD_WIDTH_MOBILE + CARD_GAP;
 

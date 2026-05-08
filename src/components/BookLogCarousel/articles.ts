@@ -133,3 +133,7 @@ export const ARTICLES: Article[] = [
     revision: "R.02",
   },
 ];
+
+export function getArticleById(id: string): Article | undefined {
+  return ARTICLES.find((a) => a.id === id);
+}

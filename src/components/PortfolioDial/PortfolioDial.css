@@ -8,13 +8,14 @@
   position: relative;
   width: 100%;
   margin-top: 0;
-  margin-bottom: 80px;
+  margin-bottom: 0px;
   padding-top: 0;
   padding-bottom: 0;
-  /* Carry our own height floor: parent <section> uses min-height: 100vh,
-     and `height: 100%` against an auto-height parent collapses to 0,
-     hiding the absolutely-positioned dial entirely. */
-  min-height: 120vh;
+  /* The parent <section> owns the 120vh height floor and is a flex
+     column; flex: 1 lets the dial stage absorb whatever space is
+     left under the topbar so its absolutely-positioned children
+     always have a non-zero box to render into. */
+  flex: 1 1 auto;
 }
 
 @media (min-width: 721px) {

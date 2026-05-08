@@ -1,0 +1,14 @@
+/* Home page layout shell.
+   Stacks the home sections in a flex column with a consistent vertical
+   gap so the transitions between Hero / Dial / BookLog / Capabilities /
+   About breathe without each section needing to grow its own internal
+   padding. var(--space-9) = 64px from the design tokens.
+
+   The Footer is intentionally outside the gap'd .main so it stays flush
+   to the last content section, which reads better as a terminal block. */
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-9);
+}

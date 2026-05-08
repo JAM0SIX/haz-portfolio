@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Spinning S Logo</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: transparent;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  }
+  body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    /* Subtle backdrop just so the demo is visible — remove for true transparent embed */
+    background: radial-gradient(circle at 50% 50%, #1a1a1f 0%, #08080b 100%);
+  }
+  #logo-container {
+    width: 360px;
+    height: 360px;
+    cursor: pointer;
+    background: transparent;
+  }
+  #logo-container canvas {
+    background: transparent !important;
+    display: block;
+  }
+</style>
+</head>
+<body>
+  <div id="logo-container"></div>
+
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+      }
+    }
+  </script>
+
+  <script type="module">
+    import * as THREE from 'three';
+    import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+    import { MeshoptDecoder } from 'three/addons/libs/meshopt_decoder.module.js';
+    import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+
+    const container = document.getElementById('logo-container');
+    const width = container.clientWidth;
+    const height = container.clientHeight;
+
+    // ---- Renderer ----
+    const renderer = new THREE.WebGLRenderer({
+      antialias: true,
+      alpha: true,
+    });
+    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setSize(width, height);
+    renderer.setClearColor(0x000000, 0);
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.0;
+    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    container.appendChild(renderer.domElement);
+
+    // ---- Scene & camera ----
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(35, width / height, 0.1, 100);
+    camera.position.set(0, 0, 4.5);
+
+    // ---- Environment for chrome reflections ----
+    // RoomEnvironment gives a clean, neutral studio reflection that flatters chrome.
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+
+    // ---- Lighting (gentle — most of the look is in the env map + emissive) ----
+    scene.add(new THREE.AmbientLight(0xffffff, 0.15));
+
+    const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
+    keyLight.position.set(3, 4, 5);
+    scene.add(keyLight);
+
+    const rimLight = new THREE.DirectionalLight(0xbfeaff, 1.0);
+    rimLight.position.set(-2, -1, -4);
+    scene.add(rimLight);
+
+    // ---- Load the model ----
+    const logo = new THREE.Group();
+    scene.add(logo);
+
+    const loader = new GLTFLoader();
+    loader.setMeshoptDecoder(MeshoptDecoder);
+    loader.load(
+      './logo.glb',
+      (gltf) => {
+        const model = gltf.scene;
+
+        // Center & scale the model to fit nicely in view
+        const box = new THREE.Box3().setFromObject(model);
+        const size = box.getSize(new THREE.Vector3());
+        const center = box.getCenter(new THREE.Vector3());
+        model.position.sub(center);
+
+        const maxDim = Math.max(size.x, size.y, size.z);
+        const scale = 2.4 / maxDim;
+        model.scale.setScalar(scale);
+
+        // Boost emissive intensity so the inner glow really pops
+        model.traverse((obj) => {
+          if (obj.isMesh && obj.material) {
+            const mat = obj.material;
+            if (mat.emissive) {
+              mat.emissiveIntensity = 1.8;
+            }
+            mat.envMapIntensity = 1.2;
+            mat.needsUpdate = true;
+          }
+        });
+
+        logo.add(model);
+      },
+      undefined,
+      (err) => {
+        console.error('Failed to load logo.glb:', err);
+      }
+    );
+
+    // ---- Idle levitation + hover-triggered single 360° spin ----
+    const SPIN_DURATION_MS = 1200;
+    const BOB_AMPLITUDE = 0.08;       // vertical float distance (world units)
+    const BOB_PERIOD_MS = 3600;       // one full up-down cycle
+    const DRIFT_AMPLITUDE = 0.06;     // gentle yaw wobble (radians)
+    const DRIFT_PERIOD_MS = 5200;     // a different period so the motion never repeats exactly
+    const TILT_AMPLITUDE = 0.04;      // slight pitch breathing (radians)
+    const TILT_PERIOD_MS = 4400;
+
+    let spinning = false;
+    let spinStart = 0;
+    let spinFromY = 0;                // y rotation at the moment hover started
+    let spinDriftPhase = 0;           // value of the drift sine at spin start
+
+    function startSpin() {
+      if (spinning) return;
+      spinning = true;
+      spinStart = performance.now();
+      spinFromY = logo.rotation.y;    // includes whatever drift offset was active
+      spinDriftPhase = (spinStart / DRIFT_PERIOD_MS) * Math.PI * 2;
+    }
+    container.addEventListener('mouseenter', startSpin);
+
+    const easeInOutCubic = (t) =>
+      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
+
+    // Save the resting tilt the model was placed at; idle motion adds to it.
+    const restRotX = logo.rotation.x;
+    const restRotZ = logo.rotation.z;
+    const restPosY = logo.position.y;
+
+    function animate(now) {
+      requestAnimationFrame(animate);
+
+      // Continuous levitation — applies whether or not we're spinning
+      const bob = Math.sin((now / BOB_PERIOD_MS) * Math.PI * 2) * BOB_AMPLITUDE;
+      logo.position.y = restPosY + bob;
+
+      const driftAngle = (now / DRIFT_PERIOD_MS) * Math.PI * 2;
+      const tiltAngle = (now / TILT_PERIOD_MS) * Math.PI * 2;
+      const drift = Math.sin(driftAngle) * DRIFT_AMPLITUDE;
+      const tilt = Math.sin(tiltAngle) * TILT_AMPLITUDE;
+
+      logo.rotation.x = restRotX + tilt;
+
+      if (spinning) {
+        const t = Math.min((now - spinStart) / SPIN_DURATION_MS, 1);
+        // Spin from where the drift had us to a clean +360° away from that same drift value,
+        // so when the spin ends the idle drift can resume seamlessly.
+        const spinAmount = easeInOutCubic(t) * Math.PI * 2;
+        logo.rotation.y = spinFromY + spinAmount;
+        if (t >= 1) {
+          spinning = false;
+          // Hand back to drift cleanly: set y so it matches the current drift sample
+          logo.rotation.y = drift;
+        }
+      } else {
+        logo.rotation.y = drift;
+      }
+
+      renderer.render(scene, camera);
+    }
+    requestAnimationFrame(animate);
+
+    // ---- Resize ----
+    window.addEventListener('resize', () => {
+      const w = container.clientWidth;
+      const h = container.clientHeight;
+      renderer.setSize(w, h);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    });
+  </script>
+</body>
+</html>

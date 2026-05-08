@@ -2,6 +2,12 @@
   position: relative;
   min-height: 100vh;
   background: var(--paper-deep);
+  /* Extra breathing room above and below this section, on top of the
+     page-level flex gap defined in app/page.module.css. With the parent
+     gap (var(--space-9) = 64px) plus this margin, neighbours sit
+     ~128px away from the book carousel — giving the section visual
+     "weight" as a quieter, contemplative break in the page rhythm. */
+  margin: var(--space-9) 0;
 }
 
 /* Clip the carousel's track overflow on desktop only — on mobile the

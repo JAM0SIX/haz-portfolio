@@ -87,7 +87,7 @@ export default function ProjectDetailTemplate({ project }: Props) {
       <div className={styles.introContainer}>
         <CursorDotField variant="paper" />
         <div className={styles.introContent}>
-          <Link className={styles.back} href="/#dial">
+          <Link className={styles.back} href="/">
             ← Back
           </Link>
 

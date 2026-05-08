@@ -2,6 +2,11 @@
   position: relative;
   min-height: 120vh;
   background: var(--paper);
+  /* Flex column so the dial stage can flex: 1 and fill the
+     remaining height beneath the topbar — keeping the whole
+     section to a stable 120vh on desktop. */
+  display: flex;
+  flex-direction: column;
 }
 
 /* Clip the dial's overflow on desktop only — on mobile the section
@@ -9,5 +14,36 @@
 @media (min-width: 721px) {
   .section {
     overflow: hidden;
+  }
+}
+
+/* Topbar — mirrors the BookLogCarousel topbar so section headings
+   read with a consistent rhythm across the page. */
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  padding: 80px var(--space-7) var(--space-4);
+  position: relative;
+  z-index: 2;
+}
+
+.topbarTitle {
+  margin: 0;
+  font-family: var(--font-heading);
+  font-size: 28px;
+  font-weight: var(--weight-bold);
+  letter-spacing: var(--track-tight);
+  line-height: var(--leading-tight);
+  color: var(--ink);
+}
+
+@media (max-width: 720px) {
+  .topbar {
+    padding: 64px var(--space-5) var(--space-4);
+  }
+
+  .topbarTitle {
+    font-size: 22px;
   }
 }
