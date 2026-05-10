@@ -24,10 +24,20 @@
 }
 
 /* ─────────────────────────────────────────────────────────────
-   Hero — portrait spans cols 1–2; right column holds caption + CTA
+   Hero — figure (caption + portrait) spans cols 1–2; right column
+   holds the lead-in copy + CTA. The figure stack uses a small
+   internal gap so the caption sits tight above the image (the
+   shell grid's row-gap is 64px, too loose for caption ↔ image).
    ───────────────────────────────────────────────────────────── */
-.heroImage {
+.heroFigure {
   grid-column: 1 / 3;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.heroImage {
   position: relative;
   width: 100%;
   aspect-ratio: 4 / 3;
@@ -52,15 +62,16 @@
   padding: var(--space-1) var(--space-2);
 }
 
-/* Right column — caption pinned to the top edge of the portrait,
-   CTA pinned to the bottom edge. */
+/* Right column — lead copy + CTA grouped at the bottom edge of the
+   portrait, with a small gap between them so they read as one block. */
 .heroSide {
   grid-column: 3 / 4;
   width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: flex-start;
+  gap: var(--space-4);
 }
 
 .filemeta {
@@ -69,6 +80,17 @@
   font-size: var(--text-md);
   line-height: var(--leading-snug);
   color: var(--ink);
+}
+
+/* Lead-in copy above the "About Me" CTA — primes the click with a
+   short sentence so the button doesn't read as a naked label. */
+.lead {
+  margin: 0;
+  font-family: var(--font-sans);
+  font-size: var(--text-md);
+  line-height: var(--leading-relaxed);
+  color: var(--ink-82);
+  max-width: 32ch;
 }
 
 /* ─────────────────────────────────────────────────────────────
@@ -184,7 +206,7 @@
     min-width: 0;
   }
 
-  .heroImage,
+  .heroFigure,
   .heroSide {
     grid-column: 1 / -1;
   }

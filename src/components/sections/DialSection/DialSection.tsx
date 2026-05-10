@@ -6,13 +6,11 @@ export default function DialSection() {
     <section
       id="dial"
       className={styles.section}
-      aria-labelledby="dial-heading"
+      aria-label="Key Projects"
     >
-      <header className={styles.topbar}>
-        <h2 id="dial-heading" className={styles.topbarTitle}>
-          Key project
-        </h2>
-      </header>
+      {/* Empty topbar preserves the section's top spacing (padding-top:
+          80px from .topbar) now that the visible heading was removed. */}
+      <header className={styles.topbar} aria-hidden="true" />
       <PortfolioDial />
     </section>
   );

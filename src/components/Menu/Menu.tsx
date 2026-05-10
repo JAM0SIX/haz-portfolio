@@ -272,6 +272,8 @@ export default function Menu({
             delay: open ? X_DURATION + Y_DURATION * 0.5 : 0,
           },
         }}
+        onMouseEnter={() => setIconHover(true)}
+        onMouseLeave={() => setIconHover(false)}
         style={{
           position: "absolute",
           top: 0,
@@ -294,8 +296,6 @@ export default function Menu({
         <motion.button
           type="button"
           onClick={toggle}
-          onMouseEnter={() => setIconHover(true)}
-          onMouseLeave={() => setIconHover(false)}
           whileTap={{ scale: 0.92 }}
           aria-label={open ? "Close menu" : "Open menu"}
           aria-expanded={open}

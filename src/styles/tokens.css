@@ -97,10 +97,11 @@
 *::before,
 *::after {
   box-sizing: border-box;
-  cursor: crosshair;
 }
 
-/* Use standard clickable cursor for interactive controls */
+/* Standard clickable cursor for interactive controls — kept after
+   dropping the global crosshair so links, buttons, and ARIA buttons
+   still get a pointer regardless of browser defaults. */
 a[href],
 button,
 [role="button"],

@@ -76,16 +76,22 @@ export default function AboutSection({
   return (
     <section id="about" className={styles.section} aria-label="About">
       <div className={styles.shell}>
-        <div className={styles.heroImage} style={portraitStyle}>
-          {!portraitSrc && (
-            <span className={styles.imagePlaceholderNote}>
-              Replace with portrait.jpg
-            </span>
-          )}
-        </div>
+        <figure className={styles.heroFigure}>
+          <figcaption className={styles.filemeta}>{caption}</figcaption>
+          <div className={styles.heroImage} style={portraitStyle}>
+            {!portraitSrc && (
+              <span className={styles.imagePlaceholderNote}>
+                Replace with portrait.jpg
+              </span>
+            )}
+          </div>
+        </figure>
 
         <div className={styles.heroSide}>
-          <p className={styles.filemeta}>{caption}</p>
+          <p className={styles.lead}>
+            For the longer story — background, current focus, and what&rsquo;s
+            coming next.
+          </p>
           <Button
             variant="secondary"
             arrow="→"

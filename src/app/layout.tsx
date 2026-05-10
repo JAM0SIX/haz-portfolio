@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import Menu from "@/components/Menu/Menu";
-import SiteLogo from "@/components/SpinningLogo/SiteLogo";
 import "./globals.css";
 
 const sora = localFont({
@@ -38,7 +37,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${sora.variable} ${appleGaramondHeading.variable}`}>
       <body>
-        <SiteLogo />
         <Menu />
         {children}
       </body>

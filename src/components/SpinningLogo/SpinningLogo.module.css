@@ -1,0 +1,61 @@
+/* Site mark hover: squares stagger-rotate on hover; orange circle translates
+   up-right. transform-box: fill-box on paths keeps origins per-shape. */
+.logo {
+  overflow: visible;
+}
+
+.logo path {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+/* Light mode (or default) — ink squares on paper surfaces */
+.logo .sq-tl,
+.logo .sq-mid,
+.logo .sq-bl,
+.logo .sq-br {
+  fill: #000;
+  transition: transform 0.65s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.logo .circle {
+  fill: rgb(168, 56, 10);
+  transition: transform 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Footer (#contact) sits on --ink-panel; match wordmark to --paper */
+:global(#contact) .logo .sq-tl,
+:global(#contact) .logo .sq-mid,
+:global(#contact) .logo .sq-bl,
+:global(#contact) .logo .sq-br {
+  fill: var(--paper);
+}
+
+/* Dark mode — invert the squares on dark surfaces */
+:global(.dark) .logo .sq-tl,
+:global(.dark) .logo .sq-mid,
+:global(.dark) .logo .sq-bl,
+:global(.dark) .logo .sq-br {
+  fill: #fff;
+}
+
+.logo:hover .sq-tl {
+  transform: rotate(45deg);
+  transition-delay: 0ms;
+}
+.logo:hover .sq-mid {
+  transform: rotate(45deg);
+  transition-delay: 80ms;
+}
+.logo:hover .sq-bl {
+  transform: rotate(45deg);
+  transition-delay: 160ms;
+}
+.logo:hover .sq-br {
+  transform: rotate(45deg);
+  transition-delay: 240ms;
+}
+
+.logo:hover .circle {
+  transform: translate(16px, -16px);
+}

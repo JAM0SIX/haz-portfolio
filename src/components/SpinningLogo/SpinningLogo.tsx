@@ -1,275 +1,69 @@
-import { useEffect, useRef, type CSSProperties } from "react";
-import * as THREE from "three";
-import { GLTFLoader, type GLTF } from "three/examples/jsm/loaders/GLTFLoader";
-import { MeshoptDecoder } from "three/examples/jsm/libs/meshopt_decoder.module.js";
-import { RoomEnvironment } from "three/examples/jsm/environments/RoomEnvironment";
-
-export interface SpinningLogoProps {
-  /** URL to the .glb file. Default: "/logo.glb" */
-  src?: string;
-  /** CSS size in px (number) or any CSS string. Default: 360 */
-  size?: number | string;
-  /** Length of one full hover-spin in ms. Default: 1200 */
-  spinDurationMs?: number;
-  /** Multiplier on the model's baked-in emissive glow. Default: 1.8 */
-  emissiveBoost?: number;
-  /** Enable idle bob/drift. Default: true */
-  levitate?: boolean;
-  /** World-units of vertical float. Default: 0.08 */
-  bobAmplitude?: number;
-  /** Radians of yaw wobble. Default: 0.06 */
-  driftAmplitude?: number;
-  /** Radians of pitch breathing. Default: 0.04 */
-  tiltAmplitude?: number;
-  className?: string;
-  style?: CSSProperties;
-  /** Accessibility label. Default: "Animated logo" */
-  ariaLabel?: string;
-  onLoad?: (gltf: GLTF) => void;
-  onError?: (err: unknown) => void;
-}
+"use client";
 
 /**
- * SpinningLogo
- * 3D chrome logo (.glb) that levitates idly and does a single 360° spin on hover/tap.
+ * SpinningLogo — Haz site mark.
  *
- * Setup:
- *   1. npm install three
- *   2. Drop your .glb in /public (e.g. public/logo.glb)
- *   3. <SpinningLogo />
+ * Four black squares + an orange circle in the upper-right. The name
+ * is historical (the old mark was a Three.js spinning model); the
+ * component now renders a static SVG. On hover, the four squares
+ * stagger-rotate 45° while the orange circle drifts up-and-to-the-right.
+ * Styles live in ./SpinningLogo.module.css.
  */
+
+import type { CSSProperties } from "react";
+import styles from "./SpinningLogo.module.css";
+
+export interface SpinningLogoProps {
+  /** CSS size in px (number) or any CSS string. Default: 72 */
+  size?: number | string;
+  /** Optional extra class name appended to the root <svg>. */
+  className?: string;
+  /** Optional inline styles forwarded to the root <svg>. */
+  style?: CSSProperties;
+  /** Accessibility label. Default: "Haz logo" */
+  ariaLabel?: string;
+}
+
 export default function SpinningLogo({
-  src = "/logo.glb",
-  size = 360,
-  spinDurationMs = 1200,
-  emissiveBoost = 1.8,
-  levitate = true,
-  bobAmplitude = 0.08,
-  driftAmplitude = 0.06,
-  tiltAmplitude = 0.04,
-  className = "",
-  style = {},
-  ariaLabel = "Animated logo",
-  onLoad,
-  onError,
+  size = 72,
+  className,
+  style,
+  ariaLabel = "Haz logo",
 }: SpinningLogoProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-
-  useEffect(() => {
-    const container = containerRef.current;
-    if (!container) return;
-
-    const reduceMotion =
-      typeof window !== "undefined" &&
-      window.matchMedia &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    const dim = () => ({
-      w: container.clientWidth || 1,
-      h: container.clientHeight || 1,
-    });
-    const initial = dim();
-
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      alpha: true,
-      powerPreference: "high-performance",
-    });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(initial.w, initial.h);
-    renderer.setClearColor(0x000000, 0);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.0;
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
-    container.appendChild(renderer.domElement);
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(35, initial.w / initial.h, 0.1, 100);
-    camera.position.set(0, 0, 4.5);
-
-    const pmrem = new THREE.PMREMGenerator(renderer);
-    const envRT = pmrem.fromScene(new RoomEnvironment(), 0.04);
-    scene.environment = envRT.texture;
-
-    scene.add(new THREE.AmbientLight(0xffffff, 0.15));
-    const keyLight = new THREE.DirectionalLight(0xffffff, 1.2);
-    keyLight.position.set(3, 4, 5);
-    scene.add(keyLight);
-    const rimLight = new THREE.DirectionalLight(0xbfeaff, 1.0);
-    rimLight.position.set(-2, -1, -4);
-    scene.add(rimLight);
-
-    const logo = new THREE.Group();
-    scene.add(logo);
-
-    const disposables: Array<{ dispose?: () => void }> = [];
-    let cancelled = false;
-
-    const loader = new GLTFLoader();
-    loader.setMeshoptDecoder(MeshoptDecoder);
-    loader.load(
-      src,
-      (gltf) => {
-        if (cancelled) return;
-        const model = gltf.scene;
-
-        const box = new THREE.Box3().setFromObject(model);
-        const sizeVec = box.getSize(new THREE.Vector3());
-        const center = box.getCenter(new THREE.Vector3());
-        model.position.sub(center);
-        const maxDim = Math.max(sizeVec.x, sizeVec.y, sizeVec.z) || 1;
-        model.scale.setScalar(2.4 / maxDim);
-
-        model.traverse((obj) => {
-          const mesh = obj as THREE.Mesh;
-          if (mesh.isMesh && mesh.material) {
-            const mats = Array.isArray(mesh.material) ? mesh.material : [mesh.material];
-            mats.forEach((mat) => {
-              const m = mat as THREE.MeshStandardMaterial;
-              if (m.emissive) m.emissiveIntensity = emissiveBoost;
-              m.envMapIntensity = 1.2;
-              m.needsUpdate = true;
-              disposables.push(m);
-            });
-            if (mesh.geometry) disposables.push(mesh.geometry);
-          }
-        });
-
-        logo.add(model);
-        onLoad?.(gltf);
-      },
-      undefined,
-      (err) => {
-        console.error("[SpinningLogo] Failed to load model:", err);
-        onError?.(err);
-      }
-    );
-
-    const SPIN_MS = Math.max(100, spinDurationMs);
-    let spinning = false;
-    let spinStart = 0;
-    let spinFromY = 0;
-
-    const startSpin = () => {
-      if (spinning) return;
-      spinning = true;
-      spinStart = performance.now();
-      spinFromY = logo.rotation.y;
-    };
-    container.addEventListener("mouseenter", startSpin);
-    container.addEventListener("touchstart", startSpin, { passive: true });
-
-    const easeInOutCubic = (t: number) =>
-      t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
-
-    let pageVisible = !document.hidden;
-    let onScreen = true;
-    const onVisibility = () => {
-      pageVisible = !document.hidden;
-    };
-    document.addEventListener("visibilitychange", onVisibility);
-
-    const io =
-      typeof IntersectionObserver !== "undefined"
-        ? new IntersectionObserver(
-            (entries) => {
-              for (const entry of entries) onScreen = entry.isIntersecting;
-            },
-            { threshold: 0.01 }
-          )
-        : null;
-    io?.observe(container);
-
-    let rafId = 0;
-    const animate = (now: number) => {
-      rafId = requestAnimationFrame(animate);
-      if (!pageVisible || !onScreen) return;
-
-      if (levitate && !reduceMotion) {
-        logo.position.y = Math.sin((now / 3600) * Math.PI * 2) * bobAmplitude;
-        logo.rotation.x = Math.sin((now / 4400) * Math.PI * 2) * tiltAmplitude;
-        const drift = Math.sin((now / 5200) * Math.PI * 2) * driftAmplitude;
-
-        if (spinning) {
-          const t = Math.min((now - spinStart) / SPIN_MS, 1);
-          logo.rotation.y = spinFromY + easeInOutCubic(t) * Math.PI * 2;
-          if (t >= 1) {
-            spinning = false;
-            logo.rotation.y = drift;
-          }
-        } else {
-          logo.rotation.y = drift;
-        }
-      } else {
-        logo.position.y = 0;
-        logo.rotation.x = 0;
-        if (spinning) {
-          const t = Math.min((now - spinStart) / SPIN_MS, 1);
-          logo.rotation.y = spinFromY + easeInOutCubic(t) * Math.PI * 2;
-          if (t >= 1) {
-            spinning = false;
-            logo.rotation.y = 0;
-          }
-        }
-      }
-
-      renderer.render(scene, camera);
-    };
-    rafId = requestAnimationFrame(animate);
-
-    const ro = new ResizeObserver(() => {
-      const { w, h } = dim();
-      renderer.setSize(w, h);
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-    });
-    ro.observe(container);
-
-    return () => {
-      cancelled = true;
-      cancelAnimationFrame(rafId);
-      ro.disconnect();
-      io?.disconnect();
-      document.removeEventListener("visibilitychange", onVisibility);
-      container.removeEventListener("mouseenter", startSpin);
-      container.removeEventListener("touchstart", startSpin);
-
-      disposables.forEach((d) => d?.dispose?.());
-      envRT.dispose?.();
-      pmrem.dispose();
-      renderer.dispose();
-      (renderer as THREE.WebGLRenderer & { forceContextLoss?: () => void }).forceContextLoss?.();
-
-      if (renderer.domElement.parentNode === container) {
-        container.removeChild(renderer.domElement);
-      }
-    };
-  }, [
-    src,
-    spinDurationMs,
-    emissiveBoost,
-    levitate,
-    bobAmplitude,
-    driftAmplitude,
-    tiltAmplitude,
-    onLoad,
-    onError,
-  ]);
+  const cls = [styles.logo, className].filter(Boolean).join(" ");
 
   return (
-    <div
-      ref={containerRef}
-      className={className}
+    <svg
+      className={cls}
+      width={size}
+      height={size}
+      viewBox="0 0 783 782"
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
       role="img"
       aria-label={ariaLabel}
-      style={{
-        width: size,
-        height: size,
-        cursor: "pointer",
-        background: "transparent",
-        display: "inline-block",
-        ...style,
-      }}
-    />
+      style={style}
+    >
+      <path
+        className={styles["sq-tl"]}
+        d="M 0 0 L 261 0 L 261 261 L 0 261 Z"
+      />
+      <path
+        className={styles["sq-mid"]}
+        d="M 261 261 L 522 261 L 522 522 L 261 522 Z"
+      />
+      <path
+        className={styles["sq-bl"]}
+        d="M 0 521 L 261 521 L 261 782 L 0 782 Z"
+      />
+      <path
+        className={styles["sq-br"]}
+        d="M 522 521 L 783 521 L 783 782 L 522 782 Z"
+      />
+      <path
+        className={styles.circle}
+        d="M 522 130.5 C 522 58.427 580.427 0 652.5 0 C 724.573 0 783 58.427 783 130.5 C 783 202.573 724.573 261 652.5 261 C 580.427 261 522 202.573 522 130.5 Z"
+      />
+    </svg>
   );
 }

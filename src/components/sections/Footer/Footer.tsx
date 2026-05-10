@@ -1,4 +1,5 @@
-import CursorDotField from "@/components/CursorDotField/CursorDotField";
+import FooterLogoDots from "./FooterLogoDots";
+import FooterNavLink from "./FooterNavLink";
 import styles from "./Footer.module.css";
 
 const NAV_LINKS = [
@@ -11,54 +12,36 @@ const NAV_LINKS = [
 
 export default function Footer() {
   return (
-    <>
-      <footer
-        id="contact"
-        className={styles.footer}
-        aria-labelledby="footer-title"
-      >
-        {/* Cursor-tracked dot field, ink variant — same proximity
-            reveal as the hero, retuned for the dark --ink-panel
-            surface. Sits absolutely behind .inner via z-index;
-            pointer-events pass through. */}
-        <CursorDotField variant="ink" />
-
-        <div className={styles.inner}>
-          <div className={styles.footerRow}>
-            <div className={styles.mark}>
-              <h2 id="footer-title" className={styles.wordmark}>
-                Haz
-              </h2>
-              <ul className={styles.nav} aria-label="Footer navigation">
-                {NAV_LINKS.map((l) => (
-                  <li key={l.href}>
-                    <a
-                      className={styles.navLink}
-                      href={l.href}
-                      {...(l.external
-                        ? { target: "_blank", rel: "noopener noreferrer" }
-                        : {})}
-                    >
-                      {l.label}
-                    </a>
-                  </li>
-                ))}
-              </ul>
+    <footer
+      id="contact"
+      className={styles.footer}
+      aria-labelledby="footer-title"
+    >
+      <div className={styles.inner}>
+        <div className={styles.topRow}>
+          <h2 id="footer-title" className={styles.logoHeading}>
+            <div className={styles.logoDotsMount}>
+              <FooterLogoDots ariaLabel="Haz" />
             </div>
+          </h2>
+          <div className={styles.sideColumn}>
+            <ul className={styles.nav} aria-label="Footer navigation">
+              {NAV_LINKS.map((l) => (
+                <li key={l.href}>
+                  <FooterNavLink
+                    href={l.href}
+                    label={l.label}
+                    external={Boolean(l.external)}
+                  />
+                </li>
+              ))}
+            </ul>
+            <p className={styles.tagline}>
+              Learning with <em>intent</em>
+            </p>
           </div>
-
-          <p className={styles.tagline}>
-            Learning with <em>intent</em>
-          </p>
-        </div>
-      </footer>
-
-      <div className={styles.baseline}>
-        <div className={styles.baselineInner}>
-          <span>© {new Date().getFullYear()} Haz.</span>
-          <span>Designed &amp; built · London</span>
         </div>
       </div>
-    </>
+    </footer>
   );
 }

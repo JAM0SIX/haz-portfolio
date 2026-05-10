@@ -38,7 +38,6 @@
   background: var(--paper);
   font-family: var(--font-sans);
   color: var(--ink);
-  cursor: pointer;
 
   clip-path: polygon(0 0, 100% 0, 100% 100%, 100% 100%, 0 100%, 0 0);
   transition:

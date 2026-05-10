@@ -679,12 +679,10 @@ function HudFooter({
   accent,
   activeIdx,
   n,
-  onAllProjects,
 }: {
   accent: string;
   activeIdx: number;
   n: number;
-  onAllProjects: () => void;
 }) {
   return (
     <div
@@ -706,14 +704,6 @@ function HudFooter({
       }}
     >
       <MiniMap activeIdx={activeIdx} n={n} accent={accent} />
-      <Button
-        variant="secondary"
-        arrow="→"
-        onClick={onAllProjects}
-        style={{ pointerEvents: "auto" }}
-      >
-        All Projects
-      </Button>
     </div>
   );
 }
@@ -1176,14 +1166,7 @@ export default function PortfolioDial() {
           )}
 
           {CONFIG.hudOn && (
-            <HudFooter
-              accent={accent}
-              activeIdx={activeIdx}
-              n={n}
-              onAllProjects={() => {
-                router.push("/projects");
-              }}
-            />
+            <HudFooter accent={accent} activeIdx={activeIdx} n={n} />
           )}
         </>
       )}

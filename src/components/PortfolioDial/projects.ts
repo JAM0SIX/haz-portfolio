@@ -73,6 +73,21 @@ export const PROJECTS: readonly Project[] = [
       ["STREAMS", "2.4 M", ""],
     ],
   },
+  // ─── Placeholder — replace with the real case study when ready. ───
+  {
+    id: "atlas",
+    title: "ATLAS",
+    role: "Concept project",
+    year: "2026",
+    tags: ["Browser", "Concept", "Tools"],
+    summary:
+      "A spatial browser concept exploring tab-as-document workflows and document-first navigation. Placeholder copy — case study to follow.",
+    metrics: [
+      ["DURATION", "12", "wk"],
+      ["DRAFTS", "3", ""],
+      ["STATUS", "WIP", ""],
+    ],
+  },
 ] as const;
 
 export function getProjectById(id: string): Project | undefined {

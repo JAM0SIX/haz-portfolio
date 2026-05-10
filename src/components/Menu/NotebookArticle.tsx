@@ -178,9 +178,9 @@ const BODY: BodyBlock[] = [
     nodes: (
       <>
         Begin with the part nobody asks about: the desk drawer. The first prototype lived
-        there for nine weeks before anyone saw it, written into a notebook with a{" "}
-        <Anno num={1}>blue ballpoint</Anno> and then re-written, three days later, in
-        pencil. The pencil version is the one that shipped.
+        there for nine weeks before anyone saw it, written into a notebook and then
+        re-written, three days later, in pencil. The pencil version is the one that
+        shipped.
       </>
     ),
   },
@@ -196,7 +196,6 @@ const BODY: BodyBlock[] = [
       </>
     ),
   },
-  { type: "h2", num: "01", text: "The grid was the brief" },
   {
     type: "p",
     nodes: (
@@ -222,7 +221,6 @@ const BODY: BodyBlock[] = [
     ),
   },
   { type: "pullquote" },
-  { type: "h2", num: "02", text: "What we threw away" },
   {
     type: "p",
     nodes: (
@@ -249,7 +247,6 @@ const BODY: BodyBlock[] = [
     ),
   },
   { type: "stats" },
-  { type: "h2", num: "03", text: "What we kept" },
   {
     type: "p",
     nodes: (
@@ -272,7 +269,6 @@ const BODY: BodyBlock[] = [
       </>
     ),
   },
-  { type: "endmark" },
 ];
 
 /* ─── Image placeholder ─────────────────────────────────────── */
@@ -367,13 +363,6 @@ export default function NotebookArticle({
         data-template={showTemplate ? "on" : "off"}
       >
         <article className="na-article" data-show-anno={showAnnotations ? "on" : "off"}>
-          <div className="na-eyebrow" data-slot="eyebrow">
-            <span className="na-sq" />
-            <span>{header.eyebrow}</span>
-            <span className="na-sep" />
-            <span className="na-num">{header.number}</span>
-          </div>
-
           <h2 className="na-hed" data-slot="headline">
             {header.title ? (
               header.title
@@ -463,16 +452,6 @@ export default function NotebookArticle({
               return (
                 <figure className="na-inline-fig" key={i} data-slot="inline_image">
                   <ImgSlot slot="inline_image.src" ratio="4 / 3" />
-                  <div>
-                    <div className="na-meta" data-slot="inline_image.caption">
-                      <span className="na-meta-label">Caption</span>
-                      {ARTICLE.inlineFig.caption}
-                    </div>
-                    <div className="na-meta" data-slot="inline_image.credit">
-                      <span className="na-meta-label">Credit</span>
-                      {ARTICLE.inlineFig.credit}
-                    </div>
-                  </div>
                 </figure>
               );
             }
@@ -599,7 +578,9 @@ const CSS = `
   display: grid;
   grid-template-columns: var(--na-col-w) 1fr;
   gap: 0 var(--na-gap);
-  padding: 56px 96px 0;
+  /* Top padding clears the fixed Menu in the root layout so the headline
+     never overlaps it. */
+  padding: 144px 96px 0;
   position: relative;
 }
 
@@ -642,7 +623,7 @@ const CSS = `
   padding: 12px 0; margin: 8px 0 48px;
   font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 11px; letter-spacing: .08em;
 }
-.na-byline .na-cell{ padding: 2px 16px 2px 0; border-right: .5px dotted var(--na-ink-faint); }
+.na-byline .na-cell{ padding: 2px 16px 2px 0; border-right: 0; }
 .na-byline .na-cell:last-child{ border-right: 0; }
 .na-byline .na-k{ display: block; text-transform: uppercase; color: var(--na-ink-faint); font-size: 9.5px; letter-spacing: .16em; margin-bottom: 4px; }
 .na-byline .na-v{ color: var(--na-ink); text-transform: none; font-size: 12.5px; letter-spacing: .02em; }
@@ -829,7 +810,7 @@ const CSS = `
 }
 .na-further a:hover{ background: oklch(0.98 0.014 78); }
 .na-fn{ font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 11px; color: var(--na-ink-faint); letter-spacing: .1em; }
-.na-ft{ font-size: 16px; line-height: 1.3; font-style: italic; }
+.na-ft{ font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 11px; line-height: 1.5; letter-spacing: .12em; text-transform: uppercase; color: var(--na-ink); }
 .na-arrow{ font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 14px; color: var(--na-ink-faint); }
 
 /* Marginalia card */
@@ -863,7 +844,7 @@ const CSS = `
 
 /* Responsive */
 @media (max-width: 1080px){
-  .na-article{ grid-template-columns: 1fr; padding: 40px 28px 0; }
+  .na-article{ grid-template-columns: 1fr; padding: 128px 28px 0; }
   .na-deck, .na-body, .na-endmark{ grid-column: 1; }
   .na-eyebrow, .na-hed, .na-byline, .na-hero, .na-pullquote, .na-stats, .na-inline-fig, .na-aside, .na-colophon{ grid-column: 1; }
   .na-stats{ grid-template-columns: repeat(2, 1fr); }
